@@ -91,33 +91,8 @@ def keyword(session, statement, keywords):
     yield session.call("rie.dialogue.keyword.clear")
     yield session.call("rie.dialogue.keyword.close")    
     return ans, cert, final
-            
-@inlineCallbacks
-def main(session, details):
-    yes_pattern = r'(?i)\b(yes)\b'
-    no_pattern = r'(?i)\b(no)\b'
-      
-    session.call("rom.optional.behavior.play", name="BlocklyStand")
-    session.call("rie.vision.face.find")
-    session.call("rie.vision.face.track") 
-    
-    #yield sleep(3)
-    ### Start of Dialogue flow
-    first_key = ["start"]
-    reply, cert, final = yield keyword(session, "Say start when you're ready!", first_key)
-    if final:
-        yield session.call("rie.dialogue.say", text="Let's gooo")
-        print("We starts")
-    
-    
-    ### Shall we start with trivia questions?
-    #yield smart_question(session, statements[0])
-    second_key = ["yes", "no"]
-    reply, cert, final = yield keyword(session, "Would you like to try something harder?", second_key)
-    print("!!!", reply, type(reply))
-    while reply == None or cert == 0.0:
-        reply, cert = yield keyword(session, "We didn't quite get that. Repeat that please!", second_key)
-    
+
+def regex(session, yes_pattern, no_pattern, reply):
     if re.search(yes_pattern, reply):
         # Trivia questions
         yield session.call("rie.dialogue.say", text="Let's start with some trivia!")
@@ -130,6 +105,37 @@ def main(session, details):
         # For times it throws a random event from the api
         yield sleep(1)
         yield session.call("rie.dialogue.say", text="I'm going to assume you want to keep on playing!")
+            
+@inlineCallbacks
+def main(session, details):
+    yes_pattern = r'(?i)\b(yes)\b'
+    no_pattern = r'(?i)\b(no)\b'
+      
+    session.call("rom.optional.behavior.play", name="BlocklyStand")
+    session.call("rie.vision.face.find")
+    session.call("rie.vision.face.track") 
+    
+    #yield sleep(3)
+    ### Start of Dialogue flow
+    first_key = ["start", "yes", "ja", "go", "forward"]
+    reply, cert, final = yield keyword(session, "Say start when you're ready!", first_key)
+    if final:
+        yield session.call("rie.dialogue.say", text="Let's gooo")
+        print("We starts")
+    
+    
+    ### Shall we start with trivia questions?
+    #yield smart_question(session, statements[0])
+    second_key = ["1", "2", "3", "4", "5"]
+    text = "Which question was your favourite one? Question 1, question 2, question 3, question 4 or      5? Mine was question uhm... I forogt. Ahah."
+    reply, cert, final = yield keyword(session, text, second_key)
+    if final:
+        yield session.call("rie.dialogue.say", text="That's a good one! I love it.")
+    #print("!!!", reply, type(reply))
+    #while reply == None or cert == 0.0:
+    #    reply, cert = yield keyword(session, "We didn't quite get that. Repeat that please!", second_key)
+    
+
         
     #yield smart_question(session, statements[1])
 
