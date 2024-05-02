@@ -22,15 +22,19 @@ statements = [
 trivia = [
     ("Where are there giraffes?", "Africa"),
     ("What is the capital of Japan?", "Tokyo"),
-    ("What is the biggest tropical rainforest in the world?", "Amazon Rainforest"),
+    ("What is the biggest tropical rainforest in the world?", "Amazon"),
     ("What continent has the smallest population?", "Antartica"),
     ("What is the smallest continent in the world?", "Australia"),
     ] 
 
+change_flow = [
+    ("Do you want to continue or change the game up?", True)
+]
+
 @inlineCallbacks
-def smart_question(session, question):
+def smart_question_binary(session, question):
     yield sleep(1)
-    answer = yield session.call("rie.dialogue.ask", question=question[0], answers={"true": ["true", "yes"], "false": ["false", "no"]})
+    answer = yield session.call("rie.dialogue.ask", question=question[0], answers={"true": ["true", "yes", "ja"], "false": ["false", "no", "nej"]})
     yield sleep(1)
     data = yield session.call("rie.dialogue.stt.read", time=6000)
     print(answer, data)
@@ -52,6 +56,30 @@ def smart_question(session, question):
     elif (answer == "true" and not question[1]) or (answer == "false" and question[1]):
         yield session.call("rie.dialogue.say", text="That is incorrect.")
 
+@inlineCallbacks
+def smart_question_branching(session):
+    yield sleep(1)
+    answer = yield session.call("rie.dialogue.ask", question="Do you want to try something harder?", answers={"true": ["true", "yes"], "false": ["false", "no"]})
+    yield sleep(1)
+    data = yield session.call("rie.dialogue.stt.read", time=6000)
+    print(answer, data)
+    answ = None
+    
+    for frame in data:
+        if (frame["data"]["body"]["final"]):
+            print(frame)
+            
+    if (answer == "true"):
+        text = "That's great! Let's go with some trivia."
+        yield session.call("rie.dialogue.say", text=text)
+        answ = True
+    elif (answer == "false"):
+        yield session.call("rie.dialogue.say", text="No problem, let's continue")
+        anws = False 
+    else: 
+        smart_question_branching(session)
+        
+    return answ
 
 @inlineCallbacks
 def on_keyword(frame, session):
@@ -112,6 +140,24 @@ def main(session, details):
     if final:
         yield session.call("rie.dialogue.say", text="Let's gooo")
         print("We starts")
+        
+        
+    yield smart_question_binary(session, statements[0])
+    yield smart_question_binary(session, statements[1])
+    yield smart_question_binary(session, statements[2])
+    
+    answ = yield smart_question_branching(session)
+    
+    if answ:
+        yield smart_question_binary(session, trivia[0])
+        yield smart_question_binary(session, trivia[1])
+        yield smart_question_binary(session, trivia[2])
+    else: 
+        yield smart_question_binary(session, statements[3])
+        yield smart_question_binary(session, statements[4])
+        yield session.call("rie.dialogue.say", text="Let's change things up.")
+        yield smart_question_binary(session, statements[3])
+        yield smart_question_binary(session, statements[4])
     
     
     ### Shall we start with trivia questions?
@@ -121,6 +167,11 @@ def main(session, details):
     reply, cert, final = yield keyword(session, text, second_key)
     if final:
         yield session.call("rie.dialogue.say", text="That's a good one! I love it.")
+        
+        
+    yield session.call("rie.dialogue.say", text="You reached the end! Great job.")
+        
+
     #print("!!!", reply, type(reply))
     #while reply == None or cert == 0.0:
     #    reply, cert = yield keyword(session, "We didn't quite get that. Repeat that please!", second_key)
