@@ -1,12 +1,14 @@
 from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep 
+from autobahn.wamp.request import Subscription
+import re
 wamp = Component(
     transports=[{
         "url": "ws://wamp.robotsindeklas.nl",
         "serializers": ["msgpack"]
     }],
-    realm="rie.66336d09c887f6d074f03073",
+    realm="rie.6633488cc887f6d074f02eeb",
 )
 
 statements = [
@@ -67,32 +69,69 @@ def on_keyword(frame, session):
         yield session.call("rie.dialogue.say", text="Great, let us begin!")
     
 @inlineCallbacks
-def keyword(session): 
+def keyword(session, statement, keywords): 
     # keyword question, not sure about this one as i have not tested
-    yield session.call("rie.dialogue.say", text="Do you want to continue.")
+    ans = None
+    cert = None
+    final = None
+    yield session.call("rie.dialogue.say", text=statement)
+    yield sleep(0.5)
     data = yield session.call("rie.dialogue.stt.read", time=6000)
     for frame in data:
         if frame["data"]["body"]["final"]:
             print(frame)
-
+            ans = frame["data"]["body"]["text"]
+            cert = frame["data"]["body"]["certainty"]
+            final = frame["data"]["body"]["final"]
+            
         
-    yield session.call("rie.dialogue.keyword.add", keywords=["yes"])
+    yield session.call("rie.dialogue.keyword.add", keywords=keywords)
     yield session.subscribe(on_keyword, "rie.dialogue.keyword.stream")
     yield session.call("rie.dialogue.keyword.stream")
     yield session.call("rie.dialogue.keyword.clear")
     yield session.call("rie.dialogue.keyword.close")    
+    return ans, cert, final
             
 @inlineCallbacks
 def main(session, details):
+    yes_pattern = r'(?i)\b(yes)\b'
+    no_pattern = r'(?i)\b(no)\b'
+      
     session.call("rom.optional.behavior.play", name="BlocklyStand")
     session.call("rie.vision.face.find")
     session.call("rie.vision.face.track") 
     
     #yield sleep(3)
     ### Start of Dialogue flow
-    yield smart_question(session, statements[0])
-    yield keyword(session)
-    yield smart_question(session, statements[1])
+    first_key = ["start"]
+    reply, cert, final = yield keyword(session, "Say start when you're ready!", first_key)
+    if final:
+        yield session.call("rie.dialogue.say", text="Let's gooo")
+        print("We starts")
+    
+    
+    ### Shall we start with trivia questions?
+    #yield smart_question(session, statements[0])
+    second_key = ["yes", "no"]
+    reply, cert, final = yield keyword(session, "Would you like to try something harder?", second_key)
+    print("!!!", reply, type(reply))
+    while reply == None or cert == 0.0:
+        reply, cert = yield keyword(session, "We didn't quite get that. Repeat that please!", second_key)
+    
+    if re.search(yes_pattern, reply):
+        # Trivia questions
+        yield session.call("rie.dialogue.say", text="Let's start with some trivia!")
+        print("START TRIVIA QUESTIONS")
+    elif re.search(no_pattern, reply):
+        # Continue with normal questions
+        yield session.call("rie.dialogue.say", text="Alright, let's continue!")
+        print("CONTINUE")
+    else:
+        # For times it throws a random event from the api
+        yield sleep(1)
+        yield session.call("rie.dialogue.say", text="I'm going to assume you want to keep on playing!")
+        
+    #yield smart_question(session, statements[1])
 
     
     
