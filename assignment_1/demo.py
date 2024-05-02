@@ -19,12 +19,15 @@ statements = [
     ("Mount Everest is the tallest mountain in the world.", True, "While Mount Everest is the highest mountain above sea level at 8,848 meters, it is not the tallest mountain when measured from base to peak. Some mountains, such as Mauna Kea in Hawaii, are taller than Everest when considering their total height from base to peak."),
     ] 
 
+answ = ["Andorra", "Armenia", "Austria", "Belarus", "Kosovo", "Czechia", "Hungary", "Liechtenstein", "Luxembourg", "North Macedonia", "Moldova*", "San Marino", "Serbia", "Slovakia", "Switzerland", "Vatican City"]
+
 trivia = [
     ("Where are there giraffes?", "Africa"),
     ("What is the capital of Japan?", "Tokyo"),
     ("What is the biggest tropical rainforest in the world?", "Amazon"),
     ("What continent has the smallest population?", "Antartica"),
     ("What is the smallest continent in the world?", "Australia"),
+    ("Name a country in Europe that is landlocked?",  answ)
     ] 
 
 change_flow = [
@@ -54,6 +57,31 @@ def smart_question_binary(session, question):
         text = "That is correct." + question[2]
         yield session.call("rie.dialogue.say", text=text)
     elif (answer == "true" and not question[1]) or (answer == "false" and question[1]):
+        yield session.call("rie.dialogue.say", text="That is incorrect.")
+        
+def smart_question_multiple(session, question):
+    print("HERE")
+    yield sleep(1)
+    answer = yield session.call("rie.dialogue.ask", question=question[0], answers={"true": ["true", "yes", "ja"], "false": ["false", "no", "nej"]})
+    yield sleep(1)
+    data = yield session.call("rie.dialogue.stt.read", time=6000)
+    print(answer, data)
+    
+    for frame in data:
+        if (frame["data"]["body"]["final"]):
+            print(frame)
+    if (answer in question[1]):
+        # nod yes
+        session.call("rom.actuator.motor.write",
+        frames=[{"time": 400, "data": {"body.head.pitch": 0.15}},
+        {"time": 1200, "data": {"body.head.pitch": -
+        0.15}},
+        {"time": 2000, "data": {"body.head.pitch": 0.15}},
+        {"time": 2400, "data": {"body.head.pitch": 0.0}}],
+        force=True) 
+        text = "That is correct." + question[2]
+        yield session.call("rie.dialogue.say", text=text)
+    elif (answer not in question[1]):
         yield session.call("rie.dialogue.say", text="That is incorrect.")
 
 @inlineCallbacks
@@ -126,8 +154,8 @@ def regex(session, yes_pattern, no_pattern, reply):
             
 @inlineCallbacks
 def main(session, details):
-    yes_pattern = r'(?i)\b(yes)\b'
-    no_pattern = r'(?i)\b(no)\b'
+    #yes_pattern = r'(?i)\b(yes)\b'
+    #no_pattern = r'(?i)\b(no)\b'
       
     session.call("rom.optional.behavior.play", name="BlocklyStand")
     session.call("rie.vision.face.find")
@@ -141,7 +169,7 @@ def main(session, details):
         yield session.call("rie.dialogue.say", text="Let's gooo")
         print("We starts")
         
-        
+    yield smart_question_multiple(session, trivia[5])
     yield smart_question_binary(session, statements[0])
     yield smart_question_binary(session, statements[1])
     yield smart_question_binary(session, statements[2])
@@ -155,44 +183,22 @@ def main(session, details):
     else: 
         yield smart_question_binary(session, statements[3])
         yield smart_question_binary(session, statements[4])
+        
         yield session.call("rie.dialogue.say", text="Let's change things up.")
+        
         yield smart_question_binary(session, statements[3])
         yield smart_question_binary(session, statements[4])
     
     
     ### Shall we start with trivia questions?
-    #yield smart_question(session, statements[0])
     second_key = ["1", "2", "3", "4", "5"]
     text = "Which question was your favourite one? Question 1, question 2, question 3, question 4 or      5? Mine was question uhm... I forogt. Ahah."
     reply, cert, final = yield keyword(session, text, second_key)
     if final:
         yield session.call("rie.dialogue.say", text="That's a good one! I love it.")
         
-        
     yield session.call("rie.dialogue.say", text="You reached the end! Great job.")
         
-
-    #print("!!!", reply, type(reply))
-    #while reply == None or cert == 0.0:
-    #    reply, cert = yield keyword(session, "We didn't quite get that. Repeat that please!", second_key)
-    
-
-        
-    #yield smart_question(session, statements[1])
-
-    
-    
-    # Keyword ask whether to ocntinue or flip
-    
-    # ---------------
-    # starting with the smart true-false questions
-    #ready_answer = yield session.call("rie.dialogue.ask", question="Are you ready to start?", answers={"yes": ["yes", "yeah"], "no": ["no", "nope"]})
-    
-    #if ready_answer != "yes":
-    #    yield session.call("rie.dialogue.say", text="Alright, just start me again when you're ready.")
-    #    session.leave()
-    #    return
-    #else:
     session.leave()
 
 wamp.on_join(main)
