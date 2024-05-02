@@ -34,7 +34,7 @@ change_flow = [
 @inlineCallbacks
 def smart_question_binary(session, question):
     yield sleep(1)
-    answer = yield session.call("rie.dialogue.ask", question=question[0], answers={"true": ["true", "yes", "ja"], "false": ["false", "no", "nej"]})
+    answer = yield session.call("rie.dialogue.ask", question=question[0], answers={"true": ["true", "yes", "ja", "tru"], "false": ["false", "no", "nej", "fls"]})
     yield sleep(1)
     data = yield session.call("rie.dialogue.stt.read", time=6000)
     print(answer, data)
@@ -59,7 +59,7 @@ def smart_question_binary(session, question):
 @inlineCallbacks
 def smart_question_branching(session):
     yield sleep(1)
-    answer = yield session.call("rie.dialogue.ask", question="Do you want to try something harder?", answers={"true": ["true", "yes"], "false": ["false", "no"]})
+    answer = yield session.call("rie.dialogue.ask", question="Do you want to try something harder?", answers={"true": ["true",, "tru", "yes", "ye"], "false": ["false", "no", "na", "nej"]})
     yield sleep(1)
     data = yield session.call("rie.dialogue.stt.read", time=6000)
     print(answer, data)
@@ -74,7 +74,7 @@ def smart_question_branching(session):
         yield session.call("rie.dialogue.say", text=text)
         answ = True
     elif (answer == "false"):
-        yield session.call("rie.dialogue.say", text="No problem, let's continue")
+        yield session.call("rie.dialogue.say", text="No problem, let's continue!")
         anws = False 
     else: 
         smart_question_branching(session)
@@ -84,7 +84,7 @@ def smart_question_branching(session):
 @inlineCallbacks
 def on_keyword(frame, session):
     if "certainty" in frame["data"]["body"] and frame["data"]["body"]["certainty"] > 0.45:
-        yield session.call("rie.dialogue.say", text="Great, let us begin!")
+        yield session.call("rie.dialogue.say", text="Great, let us begin! Answer the following questions with either True or False.")
     
 @inlineCallbacks
 def keyword(session, statement, keywords): 
@@ -122,7 +122,7 @@ def regex(session, yes_pattern, no_pattern, reply):
     else:
         # For times it throws a random event from the api
         yield sleep(1)
-        yield session.call("rie.dialogue.say", text="I'm going to assume you want to keep on playing!")
+        yield session.call("rie.dialogue.say", text="I'm going to assume you want to keep on playing! We are having so much fun!")
             
 @inlineCallbacks
 def main(session, details):
@@ -135,8 +135,8 @@ def main(session, details):
     
     #yield sleep(3)
     ### Start of Dialogue flow
-    first_key = ["start", "yes", "ja", "go", "forward"]
-    reply, cert, final = yield keyword(session, "Say start when you're ready!", first_key)
+    first_key = ["start", "yes", "ja", "go", "forward", "play"]
+    reply, cert, final = yield keyword(session, "Say start when you're ready to play!", first_key)
     if final:
         yield session.call("rie.dialogue.say", text="Let's gooo")
         print("We starts")
@@ -162,14 +162,14 @@ def main(session, details):
     
     ### Shall we start with trivia questions?
     #yield smart_question(session, statements[0])
-    second_key = ["1", "2", "3", "4", "5"]
-    text = "Which question was your favourite one? Question 1, question 2, question 3, question 4 or      5? Mine was question uhm... I forogt. Ahah."
+    second_key = ["like", "I", "question", "one", "last", "about"]
+    text = "Which question was your favourite one? Mine was question uhm... I forgot. Ahahaha."
     reply, cert, final = yield keyword(session, text, second_key)
     if final:
         yield session.call("rie.dialogue.say", text="That's a good one! I love it.")
         
         
-    yield session.call("rie.dialogue.say", text="You reached the end! Great job.")
+    yield session.call("rie.dialogue.say", text="You reached the end! Great job. I hope you learnt something new about the world around you!")
         
 
     #print("!!!", reply, type(reply))
