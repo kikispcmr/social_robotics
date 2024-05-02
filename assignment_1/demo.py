@@ -87,7 +87,7 @@ def smart_question_multiple(session, question):
 @inlineCallbacks
 def smart_question_branching(session):
     yield sleep(1)
-    answer = yield session.call("rie.dialogue.ask", question="Do you want to try something harder?", answers={"true": ["true",, "tru", "yes", "ye"], "false": ["false", "no", "na", "nej"]})
+    answer = yield session.call("rie.dialogue.ask", question="Do you want to try something harder?", answers={"true": ["true", "tru", "yes", "ye"], "false": ["false", "no", "na", "nej"]})
     yield sleep(1)
     data = yield session.call("rie.dialogue.stt.read", time=6000)
     print(answer, data)
@@ -186,8 +186,8 @@ def main(session, details):
         
         yield session.call("rie.dialogue.say", text="Let's change things up.")
         
-        yield smart_question_binary(session, statements[3])
-        yield smart_question_binary(session, statements[4])
+        yield smart_question_binary(session, trivia[3])
+        yield smart_question_binary(session, trivia[4])
     
     
     ### Shall we start with trivia questions?
