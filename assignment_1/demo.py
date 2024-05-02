@@ -14,27 +14,17 @@ wamp = Component(
 statements = [
     ("Africa is the second largest continent in the world by land area.", True, "Did you know there are giraffes in Africa!"),
     ("The capital of Japan is Tokyo.", True, "Did you know Tokyo has 14 million people living in it! That's amazing isn't it."),
-    ("The Amazon Rainforest is located in South America.", True),
-    ("The longest river in Europe is the Volga River.", True),
-    ("The Great Wall of China is visible from space.", True),
-    ("Antarctica is the smallest continent on Earth.", False),
-    ("The capital of Australia is Sydney.", False),
-    ("The Sahara Desert is the largest desert in the world.", False),
-    ("Mount Everest is the tallest mountain in the world.", False),
-    ("The Nile River in Africa is the longest river in the world.", False)
+    ("The Amazon Rainforest is located in South America.", True, "The Amazon Rainforest is the largest tropical rainforest in the world, spanning across nine different countries!"),
+    ("Antarctica is the smallest continent on Earth.", False, "Australia, not Antarctica, is the smallest continent by land area, despite Antarctica having the smallest population due to its harsh environment."),
+    ("Mount Everest is the tallest mountain in the world.", True, "While Mount Everest is the highest mountain above sea level at 8,848 meters, it is not the tallest mountain when measured from base to peak. Some mountains, such as Mauna Kea in Hawaii, are taller than Everest when considering their total height from base to peak."),
     ] 
 
 trivia = [
-    ("Where are there giraffes?", "Africa", "Did you know there are giraffes in Africa!"),
-    ("The capital of Japan is Tokyo.", True),
-    ("The Amazon Rainforest is located in South America.", True),
-    ("The longest river in Europe is the Volga River.", True),
-    ("The Great Wall of China is visible from space.", True),
-    ("Antarctica is the smallest continent on Earth.", False),
-    ("The capital of Australia is Sydney.", False),
-    ("The Sahara Desert is the largest desert in the world.", False),
-    ("Mount Everest is the tallest mountain in the world.", False),
-    ("The Nile River in Africa is the longest river in the world.", False)
+    ("Where are there giraffes?", "Africa"),
+    ("What is the capital of Japan?", "Tokyo"),
+    ("What is the biggest tropical rainforest in the world?", "Amazon Rainforest"),
+    ("What continent has the smallest population?", "Antartica"),
+    ("What is the smallest continent in the world?", "Australia"),
     ] 
 
 @inlineCallbacks
