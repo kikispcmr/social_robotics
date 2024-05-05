@@ -261,9 +261,41 @@ def main(session, details):
     reply, cert, final = yield keyword(session, text, second_key)
     if final:
         yield session.call("rie.dialogue.say", text="That's a good one! I love it.")
+<<<<<<< HEAD
 
     yield session.call("rie.dialogue.say", text="You reached the end! Great job.")
 
+=======
+        
+    session.call("rom.optional.behavior.play", name="BlocklyRobotDance")
+    yield session.call("rie.dialogue.say", text="You reached the end! Great job. I hope you learnt something new about the world around you!")
+
+    session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
+    yield session.call("rie.dialogue.say", text="Goodbye!")
+
+
+    #print("!!!", reply, type(reply))
+    #while reply == None or cert == 0.0:
+    #    reply, cert = yield keyword(session, "We didn't quite get that. Repeat that please!", second_key)
+    
+
+        
+    #yield smart_question(session, statements[1])
+
+    
+    
+    # Keyword ask whether to ocntinue or flip
+    
+    # ---------------
+    # starting with the smart true-false questions
+    #ready_answer = yield session.call("rie.dialogue.ask", question="Are you ready to start?", answers={"yes": ["yes", "yeah"], "no": ["no", "nope"]})
+    
+    #if ready_answer != "yes":
+    #    yield session.call("rie.dialogue.say", text="Alright, just start me again when you're ready.")
+    #    session.leave()
+    #    return
+    #else:
+>>>>>>> a75e3b3172b6e635b07c43d18ed7600643ffb545
     session.leave()
 
 

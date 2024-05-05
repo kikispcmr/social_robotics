@@ -286,6 +286,16 @@ def main(session, _):
 
     yield session.call("rie.dialogue.say", text="You reached the end! Great job.")
 
+    # Cute final animations
+    session.call("rom.optional.behavior.play", name="BlocklyRobotDance")
+    yield session.call(
+        "rie.dialogue.say",
+        text="You reached the end! Great job. I hope you learnt something new about the world around you!",
+    )
+
+    session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
+    yield session.call("rie.dialogue.say", text="Goodbye!")
+
     session.leave()
 
 
