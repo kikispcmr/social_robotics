@@ -8,7 +8,7 @@ from twisted.internet.defer import inlineCallbacks
 
 wamp = Component(
     transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.6639ecdac887f6d074f04fd0",
+    realm="rie.66434106c887f6d074f07e38",
 )
 
 questions = [
