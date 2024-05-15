@@ -15,14 +15,36 @@ def main(session, details):
 
 
     yield session.call("rie.dialogue.say", text="hello!")
-
-    # Define and execute the skiing movement sequence correctly
+    
+    #test1
+    # Define and execute the skiing movement sequence correctly. For some reason, part of the time legs not moving.
     yield session.call("rom.actuator.motor.write",
         frames=[{"time": 1200, "data": {"legs.right.upper.pitch": -1.75}},
             {"time": 1200, "data": {"arms.left.upper.pitch": -2.6}},
             {"time": 1200, "data": {"legs.right.upper.pitch": 1.75}},
             {"time": 1200, "data": {"legs.left.upper.pitch": 1.75}}],
             force=True)
+    
+    #test2
+    yield session.call("rom.actuator.motor.write",
+        frames=[
+            # starting position
+            {"time": 1000, "data": {"legs.right.upper.pitch": 0.5, "legs.left.upper.pitch": 0.5, "arms.right.upper.pitch": -0.5, "arms.left.upper.pitch": -0.5}},
+            
+            # right ski push
+            {"time": 2000, "data": {"legs.right.upper.pitch": -0.5, "arms.left.upper.pitch": -1.0}},
+            
+            # return to middle
+            {"time": 3000, "data": {"legs.right.upper.pitch": 0.5, "legs.left.upper.pitch": 0.5, "arms.right.upper.pitch": -0.5, "arms.left.upper.pitch": -0.5}},
+            
+            # left ski push
+            {"time": 4000, "data": {"legs.left.upper.pitch": -0.5, "arms.right.upper.pitch": -1.0}},
+            
+            # return to starting position
+            {"time": 5000, "data": {"legs.right.upper.pitch": 0.5, "legs.left.upper.pitch": 0.5, "arms.right.upper.pitch": -0.5, "arms.left.upper.pitch": -0.5}}
+        ],
+        force=True)
+
 
     yield session.call("rie.dialogue.say", text="Skiing movement complete!")
 
