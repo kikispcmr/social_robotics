@@ -140,7 +140,7 @@ def main(session, details):
         )
 
     card_detected = yield session.call("rie.vision.card.read")
-    print("card json:", card_detected[0]['data']['body'][0][5])
+    print(card_detected[0])
     yield session.call("rie.dialogue.say", text="Let's try something different.. Answer my questions using the aruco cards infront of me !")
 
     dialogue_manager = Dialogue_card()
