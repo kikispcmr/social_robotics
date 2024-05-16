@@ -8,7 +8,7 @@ from twisted.internet.defer import inlineCallbacks
 TIMEOUT_TIME = 1
 wamp = Component(
     transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.6636524dc887f6d074f03f25",
+    realm="rie.6639ecdac887f6d074f04fd0",
 )
 
 # Questions: (Question asked: string, Question truth: boolean, Trivia Reply: string)
@@ -220,7 +220,7 @@ def regex(session, yes_pattern, no_pattern, reply):
 
 
 @inlineCallbacks
-def main(session, details):
+def assigment1_stuff(session):
     session.call("rom.optional.behavior.play", name="BlocklyStand")
     session.call("rie.vision.face.find")
     session.call("rie.vision.face.track")
@@ -271,6 +271,24 @@ def main(session, details):
     session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
     yield session.call("rie.dialogue.say", text="Goodbye!")
 
+
+@inlineCallbacks
+def assigment2_stuff(session):
+    yield session.call(
+        "rom.actuator.motor.write",
+        frames=[
+            {"time": 400, "data": {"body.head.pitch": 0.1}},
+            {"time": 1200, "data": {"body.head.pitch": -0.1}},
+            {"time": 2000, "data": {"body.head.pitch": 0.1}},
+            {"time": 2400, "data": {"body.head.pitch": 0.0}},
+        ],
+        force=True,
+    )
+
+
+@inlineCallbacks
+def main(session, details):
+    assigment2_stuff(session)
     session.leave()
 
 
