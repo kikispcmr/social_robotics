@@ -23,7 +23,7 @@ class Dialogue_card:
         for card_id, (animal, location) in animals_cards.items():
             correct = False
             attempts = 0
-            max_attempts = 3  # set a max number of attempts per question
+            max_attempts = 1 # set a max number of attempts per question
             question = f"Where do {animal}s live?"
 
             while not correct and attempts < max_attempts:
