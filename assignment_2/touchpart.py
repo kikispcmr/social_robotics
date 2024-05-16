@@ -40,6 +40,7 @@ class Dialogue_card:
 
                 correct = yield self.wait_for_correct_card(session, card_id)
 
+                print("exited")
                 if correct:
                     yield session.call("rie.dialogue.say", text=f"Correct! {animal}s live in {location}.")
                 else:
@@ -53,8 +54,14 @@ class Dialogue_card:
 
     @inlineCallbacks
     def wait_for_correct_card(self, session, correct_card_id):
+        print("entered")
         # if we have the correct card
         card_detected = yield session.call("rie.vision.card.read")
+
+        print(card_detected[0])
+        yield session.subscribe(self.on_card, "rie.vision.card.stream")
+        yield session.call("rie.vision.card.stream")
+        
         if card_detected[0] == correct_card_id: # check that the id is correct
             return True
         return False
@@ -66,8 +73,8 @@ class Dialogue_card:
 
 @inlineCallbacks
 def main(session, details):
-
-    '''    # Touch subscribte
+    '''
+    # Touch subscribte
     session.subscribe(touched, "rom.sensor.touch.stream")
 
     # Start by seeking for participants
@@ -92,30 +99,24 @@ def main(session, details):
         yield session.call("rie.dialogue.say", text="That is incorrect!")
     else:
         yield session.call("rie.dialogue.say", text="Sorry, but I didn't hear you properly.")
-    '''
 
     print("skiing now")
     # Skiing motion self-defined
-    yield session.call("rom.actuator.motor.write", # <- self-defined gesture for concept skiing
+    yield session.call("rom.actuator.motor.write",
         frames=[
             # starting position
-            {"time": 1000, "data": {"body.legs.right.upper.pitch": 0.5, "body.legs.left.upper.pitch": 0.5, "body.arms.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -0.5}},
+            {"time": 400, "data": {"body.arms.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -0.5}},
             
             # right ski push
-            {"time": 2000, "data": {"body.legs.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -1.0}},
-            
-            # return to middle
-            {"time": 3000, "data": {"body.legs.right.upper.pitch": 0.5, "body.legs.left.upper.pitch": 0.5, "body.arms.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -0.5}},
+            {"time": 1000, "data": {"body.arms.right.upper.pitch": -1.0,"body.arms.left.upper.pitch": 1.0}},
             
             # left ski push
-            {"time": 4000, "data": {"body.legs.left.upper.pitch": -0.5, "body.arms.right.upper.pitch": -1.0}},
+            {"time": 2000, "data": {"body.arms.right.upper.pitch": 1.0, "body.arms.left.upper.pitch": -1.0}},
             
             # return to starting position
-            {"time": 5000, "data": {"body.legs.right.upper.pitch": 0.5, "body.legs.left.upper.pitch": 0.5, "body.arms.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -0.5}}
+            {"time": 2400, "data": {"body.arms.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -0.5}}
         ],
         force=True)
-    
-    print("question time")
 
     # Second question
     question = "Skiing originated as a mode of transportation in the Alps during the 19th century."
@@ -130,14 +131,16 @@ def main(session, details):
         yield session.call("rie.dialogue.say", text="That is correct! Skiing originated in northern Europe and Asia thousands of years ago as a means of transportation. The oldest known skis were found in Russia and date back to around 6000 to 5000 BC")
     else:
         yield session.call("rie.dialogue.say", text="Sorry, but I didn't hear you properly.")
+    '''
 
-
+    card_detected = yield session.call("rie.vision.card.read")
+    print(card_detected[0])
     yield session.call("rie.dialogue.say", text="Let's try something different.. Answer my questions using the aruco cards infront of me !")
 
     dialogue_manager = Dialogue_card()
-    yield session.subscribe(dialogue_manager.on_card, "rie.vision.card.stream")
+    #yield session.subscribe(dialogue_manager.on_card, "rie.vision.card.stream")
     #yield session.subscribe(dialogue_manager.ask_geographical_card_question, "rie.vision.card.stream")
-    # ask the geography card qquestion
+    # ask the geography card question
     yield dialogue_manager.ask_geographical_card_question(session) # <- aruco cards interaction
 
     
