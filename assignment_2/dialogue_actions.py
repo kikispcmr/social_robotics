@@ -61,15 +61,15 @@ class DialogueBranches:
         if question[3] == True and action is not None:
             action()
 
-        _, answer = self.base_smart_question_flow(self.session, question)
+        # _, answer = yield self.base_smart_question_flow(self.session, question)
         yield sleep(1)
         answer = yield self.session.call(
             "rie.dialogue.ask",
             question=question[0],
             answers={"true": ["true", "yes", "ja"], "false": ["false", "no", "nej"]},
         )
-        yield sleep(1)
         yield self.session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
+        yield sleep(1)
 
         if answer in question[1]:
             self.session.call(

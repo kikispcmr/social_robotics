@@ -29,7 +29,9 @@ questions = [
 def dialogue_section(session, action_manager, dialogue_manager):
 
     for question in questions:
-        dialogue_manager.smart_question_multiple(questions, action_manager.skiing_motion))
+        dialogue_manager.smart_question_multiple(
+            questions, action_manager.skiing_motion
+        )
 
 
 @inlineCallbacks
