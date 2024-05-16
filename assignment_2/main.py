@@ -8,7 +8,7 @@ from twisted.internet.defer import inlineCallbacks
 TIMEOUT_TIME = 6000
 wamp = Component(
     transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.6639d599c887f6d074f04f49",
+    realm="rie.6645d299f26645d6dd2bcb28",
 )
 
 questions = [
