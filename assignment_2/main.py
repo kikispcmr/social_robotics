@@ -8,7 +8,7 @@ from twisted.internet.defer import inlineCallbacks
 
 wamp = Component(
     transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.6639ecdac887f6d074f04fd0",
+    realm="rie.6639d599c887f6d074f04f49",
 )
 
 questions = [
@@ -53,24 +53,24 @@ change_flow = [("Do you want to continue or change the game up?", True)]
 
 
 @inlineCallbacks
-def main(session, details):
+def assigment1_stuff(session):
     dialogue_manager = Dialogue()
-
     session.call("rom.optional.behavior.play", name="BlocklyStand")
     session.call("rie.vision.face.find")
     session.call("rie.vision.face.track")
 
     first_key = ["start", "yes", "ja", "go", "forward", "play"]
-
-    reply, _, final = yield dialogue_manager.keyword(
-        session, "Say start when you're ready", first_key
+    reply, cert, final = yield dialogue_manager.keyword(
+        session, "Say start when you're ready to play!", first_key
     )
+
     if final:
         yield session.call("rie.dialogue.say", text="Let's gooo")
         print("We starts")
 
     yield dialogue_manager.smart_question_binary(session, questions[0])
     yield dialogue_manager.smart_question_binary(session, questions[1])
+
     yield dialogue_manager.smart_question_binary(session, questions[2])
 
     answ = yield dialogue_manager.smart_question_branching(
@@ -106,6 +106,43 @@ def main(session, details):
     session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
     yield session.call("rie.dialogue.say", text="Goodbye!")
 
+
+@inlineCallbacks
+def assigment2_stuff(session):
+    yield session.call("rie.dialogue.say", text="Let's gooo")
+    yield session.call("rom.optional.behavior.play", name="BlocklyCrouch")
+
+    # yield session.call("rom.actuator.motor.stop")
+    """yield session.call(
+        "rom.actuator.motor.write",
+        frames=[
+            {"time": 400, "data": {"body.head.pitch": 0.1}},
+            {"time": 1200, "data": {"body.head.pitch": -0.1}},
+            {"time": 2000, "data": {"body.head.pitch": 0.1}},
+            {"time": 2400, "data": {"body.head.pitch": 0.0}},
+        ],
+        force=True,
+    )"""
+
+    yield session.call(
+        "rom.actuator.motor.write",
+        frames=[
+            {
+                "time": 400,
+                "data": {
+                    "body.arms.right.upper.pitch": 1.50,
+                    "body.arms.left.upper.pitch": 1.30,
+                },
+            },
+            # {"time": 1000, "data": {"body.arms.right.upper.pitch": -2.10}},
+            # {"time": 1200, "data": {"body.arms.left.upper.pitch": 1.50}},
+        ],
+    )
+
+
+@inlineCallbacks
+def main(session, details):
+    yield assigment2_stuff(session)
     session.leave()
 
 
