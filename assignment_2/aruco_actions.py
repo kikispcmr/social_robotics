@@ -59,11 +59,13 @@ class DialogueCard:
         # if we have the correct card
         card_detected = yield session.call("rie.vision.card.read")
 
-        print(card_detected[0])
+        print("card detected : ", card_detected[0]["data"]["body"][0][5])
         yield session.subscribe(self.on_card, "rie.vision.card.stream")
         yield session.call("rie.vision.card.stream")
 
-        if card_detected[0] == correct_card_id:  # check that the id is correct
+        if (
+            card_detected[0]["data"]["body"][0][5] == correct_card_id
+        ):  # check that the id is correct
             return True
         return False
 
