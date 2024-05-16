@@ -29,7 +29,7 @@ class Dialogue_card:
         for card_id, (animal, location) in animals_cards.items():
             correct = False
             attempts = 0
-            max_attempts = 1  # set a max number of attempts per question
+            max_attempts = 2  # set a max number of attempts per question
             question = f"Where do {animal}s live?"
 
             while not correct and attempts < max_attempts:
@@ -58,11 +58,11 @@ class Dialogue_card:
         # if we have the correct card
         card_detected = yield session.call("rie.vision.card.read")
 
-        print(card_detected[0])
+        print("card detected : ", card_detected[0]['data']['body'][0][5])
         yield session.subscribe(self.on_card, "rie.vision.card.stream")
         yield session.call("rie.vision.card.stream")
         
-        if card_detected[0] == correct_card_id: # check that the id is correct
+        if card_detected[0]['data']['body'][0][5] == correct_card_id: # check that the id is correct
             return True
         return False
 
@@ -134,7 +134,7 @@ def main(session, details):
     '''
 
     card_detected = yield session.call("rie.vision.card.read")
-    print(card_detected[0])
+    print("card json:", card_detected[0]['data']['body'][0][5])
     yield session.call("rie.dialogue.say", text="Let's try something different.. Answer my questions using the aruco cards infront of me !")
 
     dialogue_manager = Dialogue_card()
