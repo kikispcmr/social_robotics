@@ -45,13 +45,13 @@ def main(session, details):
             {"time": 1000, "data": {"body.legs.right.upper.pitch": 0.5, "body.legs.left.upper.pitch": 0.5, "body.arms.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -0.5}},
             
             # right ski push
-            {"time": 2000, "data": {"body.legs.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -1.0}},
+            {"time": 2000, "data": {"body.legs.right.upper.pitch": -0.5, "body.legs.left.upper.pitch": 0.5, "body.arms.right.upper.pitch": -0.5,"body.arms.left.upper.pitch": -1.0}},
             
             # return to middle
             {"time": 3000, "data": {"body.legs.right.upper.pitch": 0.5, "body.legs.left.upper.pitch": 0.5, "body.arms.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -0.5}},
             
             # left ski push
-            {"time": 4000, "data": {"body.legs.left.upper.pitch": -0.5, "body.arms.right.upper.pitch": -1.0}},
+            {"time": 4000, "data": {"body.legs.right.upper.pitch": 0.5, "body.legs.left.upper.pitch": -0.5, "body.arms.right.upper.pitch": -1.0, "body.arms.left.upper.pitch": -0.5}},
             
             # return to starting position
             {"time": 5000, "data": {"body.legs.right.upper.pitch": 0.5, "body.legs.left.upper.pitch": 0.5, "body.arms.right.upper.pitch": -0.5, "body.arms.left.upper.pitch": -0.5}}
