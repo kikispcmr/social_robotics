@@ -7,7 +7,6 @@ TIMEOUT_TIME = 6000
 
 def touched(frame):
     if ("body.head.front" in frame["data"] or "body.head.middle" in frame["data"] or "body.head.rear" in frame["data"]):
-        #yield call("rie.dialogue.say", text="Ouch! Please don't touch me!")
         print("touch") 
 
 # aruco id mapping - 4 cards
@@ -114,8 +113,6 @@ def main(session, details):
         )
 
     # Second question
-    # Skiin I guess
-
     question = "Skiing originated as a method of travel in the Alps during the 19th century."
     answers = {
         "true": ["True", "tru", "yes"],
@@ -139,17 +136,14 @@ def main(session, details):
             "rie.dialogue.say", text="Sorry, but I didn't hear you properly."
         )
 
-    card_detected = yield session.call("rie.vision.card.read")
-    print(card_detected[0])
-    yield session.call("rie.dialogue.say", text="Let's try something different.. Answer my questions using the aruco cards infront of me !")
 
+    yield session.call("rie.dialogue.say", text="Let's try something different.. Answer my questions using the aruco cards infront of me !")
     dialogue_manager = Dialogue_card()
-    # yield session.subscribe(dialogue_manager.on_card, "rie.vision.card.stream")
-    # yield session.subscribe(dialogue_manager.ask_geographical_card_question, "rie.vision.card.stream")
+
     # ask the geography card question
     yield dialogue_manager.ask_geographical_card_question(
         session
-    )  # <- aruco cards interaction
+    )  # <- aruco cards interactions
 
     session.call("rom.optional.behavior.play", name="BlocklyRobotDance")
     yield session.call(
