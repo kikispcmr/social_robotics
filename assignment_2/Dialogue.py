@@ -112,7 +112,7 @@ class Dialogue:
         ):
             yield session.call(
                 "rie.dialogue.say",
-                text="Great, let us begin! Answer the following questions with either True or False.",
+                text="Great, let us begin!",
             )
 
     @inlineCallbacks
