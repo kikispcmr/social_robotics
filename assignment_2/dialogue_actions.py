@@ -13,11 +13,13 @@ class DialogueBranches:
         self.session = session
 
     @inlineCallbacks
-    def base_smart_question_flow(self, session, questions):
+    def base_smart_question_flow(self, questions,  action=None):
+        if questions[3] == True and action is not None:
+            action()
         yield sleep(1)
 
         print("WE ARE HERE")
-        answer = yield session.call(
+        answer = yield self.session.call(
             "rie.dialogue.ask",
             question=questions[0],
             answers={
@@ -27,7 +29,7 @@ class DialogueBranches:
         )
         print("WE ARE HERE2", answer)
         yield sleep(1)
-        data = yield session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
+        data = yield self.session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
         print(data, answer)
         return data, answer
 
@@ -61,14 +63,24 @@ class DialogueBranches:
         if question[3] == True and action is not None:
             action()
 
+<<<<<<< HEAD
         # _, answer = yield self.base_smart_question_flow(self.session, question)
+=======
+        #_, answer = self.base_smart_question_flow(self.session, question)
+>>>>>>> 41c109cffe4df7ae07aa74c2282931ee04344d98
         yield sleep(1)
         answer = yield self.session.call(
             "rie.dialogue.ask",
             question=question[0],
             answers={"true": ["true", "yes", "ja"], "false": ["false", "no", "nej"]},
         )
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 41c109cffe4df7ae07aa74c2282931ee04344d98
         yield self.session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
+        yield sleep(1)
+
         yield sleep(1)
 
         if answer in question[1]:
