@@ -8,7 +8,7 @@ from twisted.internet.defer import inlineCallbacks
 TIMEOUT_TIME = 6000
 wamp = Component(
     transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.6639d599c887f6d074f04f49",
+    realm="rie.6645d299f26645d6dd2bcb28",
 )
 
 questions = [
@@ -16,6 +16,7 @@ questions = [
         "Africa is the second largest continent in the world by land area.",
         True,
         "That is correct! Africa is the second largest continent in the world by land area.",
+        False,
     ),
     (
         "Skiing originated as a mode of transportation in the Alps during the 19th century.",
@@ -25,11 +26,12 @@ questions = [
     ),
 ]
 
-
+@inlineCallbacks
 def dialogue_section(session, action_manager, dialogue_manager):
 
     for question in questions:
-        dialogue_manager.smart_question_multiple(questions, action_manager.skiing_motion))
+        yield dialogue_manager.base_smart_question_flow(question, action_manager.skiing_motion)
+        yield sleep(1)
 
 
 @inlineCallbacks
@@ -37,11 +39,11 @@ def main(session, details):
     action_manager = RobotActions(session)
     card_manager = DialogueCard()
     dialogue_manager = DialogueBranches(session)
-    session.subscribe(action_manager.touched, "rom.sensor.touch.stream")
+    '''session.subscribe(action_manager.touched, "rom.sensor.touch.stream")
 
     yield session.call("rie.vision.face.find")
     yield session.call(
-        "rom.optional.behavior.play", name="BlocklyWaveRightArm"
+        "rom.optional.behavior.play", name="BlocklyApplause"
     )  # <- predefined behaviour with no target word
     yield session.call(
         "rie.dialogue.say",
@@ -51,7 +53,7 @@ def main(session, details):
     yield session.call(
         "rie.dialogue.say",
         text="Awesome! Let's begin the game!! Answer True or False to the following statements.",
-    )
+    )'''
 
     # GAME SECTION
 

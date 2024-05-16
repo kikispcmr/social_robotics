@@ -104,10 +104,10 @@ def main(session, details):
         )  # <- predefined behaviour with target word "True"
         yield session.call(
             "rie.dialogue.say",
-            text="That is correct! Did you know there are giraffes in Africa!",
+            text="Good job! That is correct! Did you know there are giraffes in Africa! Let's continue",
         )
     elif answer == "false":
-        yield session.call("rie.dialogue.say", text="That is incorrect!")
+        yield session.call("rie.dialogue.say", text="That is incorrect! Good luck on the next question!")
     else:
         yield session.call(
             "rie.dialogue.say", text="Sorry, but I didn't hear you properly."
@@ -116,7 +116,7 @@ def main(session, details):
     # Second question
     # Skiin I guess
 
-    question = "Skiing originated as a mode of transportation in the Alps during the 19th century."
+    question = "Skiing originated as a method of travel in the Alps during the 19th century."
     answers = {
         "true": ["True", "tru", "yes"],
         "false": ["False", "fls", "no", "fals", "falz"],
@@ -128,11 +128,11 @@ def main(session, details):
         session.call(
             "rom.optional.behaviour.play", name="BlocklyApplause"
         )  # <- predefined behaviour with target word "True"
-        yield session.call("rie.dialogue.say", text="That is incorrect!")
+        yield session.call("rie.dialogue.say", text="That is incorrect! Good luck on the next question!")
     elif answer == "false":  # correct answer
         yield session.call(
             "rie.dialogue.say",
-            text="That is correct! Skiing originated in northern Europe and Asia thousands of years ago as a means of transportation. The oldest known skis were found in Russia and date back to around 6000 to 5000 BC",
+            text="Great job! That is correct! Skiing originated in northern Europe and Asia thousands of years ago as a means of transportation. The oldest known skis were found in Russia and date back to around 6000 to 5000 BC",
         )
     else:
         yield session.call(
@@ -166,7 +166,7 @@ def main(session, details):
 # Create wamp connection
 wamp = Component(
     transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.6645d117f26645d6dd2bcaf7",
+    realm="rie.6645d299f26645d6dd2bcb28",
 )
 
 

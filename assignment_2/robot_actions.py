@@ -48,4 +48,5 @@ class RobotActions:
             print("touch")
 
     def skiing_motion(self, frames=skiing_frames):
+        print("Yes")
         yield self.session.call("rom.actuator.motor.write", frames=frames, force=True)
