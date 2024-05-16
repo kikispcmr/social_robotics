@@ -9,7 +9,7 @@ animals_cards = {
 }
 
 
-class Dialogue_card:
+class DialogueCard:
     def __init__(self):
         pass
 

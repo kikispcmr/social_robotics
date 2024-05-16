@@ -8,9 +8,9 @@ from twisted.internet.defer import inlineCallbacks
 TIMEOUT_TIME = 6000
 
 
-class Dialogue:
-    def __init__(self):
-        pass
+class DialogueBranches:
+    def __init__(self, session):
+        self.session = session
 
     @inlineCallbacks
     def base_smart_question_flow(self, session, questions):
@@ -57,19 +57,22 @@ class Dialogue:
             yield session.call("rie.dialogue.say", text="That is incorrect.")
 
     @inlineCallbacks
-    def smart_question_multiple(self, session, question):
-        _, answer = self.base_smart_question_flow(session, question)
+    def smart_question_multiple(self, question, action=None):
+        if question[3] == True and action is not None:
+            action()
+
+        _, answer = self.base_smart_question_flow(self.session, question)
         yield sleep(1)
-        answer = yield session.call(
+        answer = yield self.session.call(
             "rie.dialogue.ask",
             question=question[0],
             answers={"true": ["true", "yes", "ja"], "false": ["false", "no", "nej"]},
         )
         yield sleep(1)
-        yield session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
+        yield self.session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
 
         if answer in question[1]:
-            session.call(
+            self.session.call(
                 "rom.actuator.motor.write",
                 frames=[
                     {"time": 400, "data": {"body.head.pitch": 0.15}},
@@ -80,9 +83,9 @@ class Dialogue:
                 force=True,
             )
             text = "That is correct." + question[2]
-            yield session.call("rie.dialogue.say", text=text)
+            yield self.session.call("rie.dialogue.say", text=text)
         elif answer not in question[1]:
-            yield session.call("rie.dialogue.say", text="That is incorrect.")
+            yield self.session.call("rie.dialogue.say", text="That is incorrect.")
 
     @inlineCallbacks
     def smart_question_branching(self, session, question):
