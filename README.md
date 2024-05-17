@@ -1,6 +1,6 @@
 # Geography Trivia Question Game 
 
-Engage children from ages 8 - 10 in an interactive trivia question game with a robot! The robot will ask a series of true/false and multiple-choice questions, provide feedback on the user's answers, and even offer additional trivia information related to the questions.
+Our interactive geography learning game for students aged 9-12 uses a social robot to create an engaging educational experience! The robot will ask a series of true/false questions and interactive aruco card questions, provide feedback on the user's answers, and even offer additional trivia information related to the questions.
 
 ## Prerequisites
 
@@ -32,7 +32,11 @@ python main.py
 
 ## How It Works
 
-Our project will guide the user through a series of trivia questions, starting with a few true/false questions. After a few questions, the robot will ask the user if they want to try something harder. Depending on the reply, the question game will either try harder question based on previously mentioned trivia, or continue the original game. 
+The robot begins by detecting a participant's face and asking if they want to play. The child starts the game by touching the robot's head, which focuses their attention.
+
+The game includes true/false questions with positive feedback for correct answers, including predefined clapping gestures and fun facts. Incorrect answers receive corrective feedback and encouragement. The robot also performs an iconic skiing gesture to illustrate a concept and uses predefined behaviors like dancing and waving to maintain engagement.
+
+In the final phase, the child uses Aruco cards to match animals to their habitats, allowing for kinesthetic learning. This multimodal interaction aims to create an effective and enjoyable geography lesson.
 
 Enjoy!
 

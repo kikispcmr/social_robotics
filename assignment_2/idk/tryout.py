@@ -103,7 +103,7 @@ def main(session, details):
         )  # <- predefined behaviour with target word "True"
         yield session.call(
             "rie.dialogue.say",
-            text="Good job! That is correct! Did you know there are giraffes in Africa! Let's continue",
+            text="Good job! That is correct! Did you know there are giraffes in Africa! Let's continue with another question..",
         )
     elif answer == "false":
         yield session.call("rie.dialogue.say", text="That is incorrect! Good luck on the next question!")
@@ -125,7 +125,7 @@ def main(session, details):
         session.call(
             "rom.optional.behaviour.play", name="BlocklyApplause"
         )  # <- predefined behaviour with target word "True"
-        yield session.call("rie.dialogue.say", text="That is incorrect! Good luck on the next question!")
+        yield session.call("rie.dialogue.say", text="Good try but that is incorrect! Let's see if u can get the next one right !")
     elif answer == "false":  # correct answer
         yield session.call(
             "rie.dialogue.say",
@@ -137,7 +137,7 @@ def main(session, details):
         )
 
 
-    yield session.call("rie.dialogue.say", text="Let's try something different.. Answer my questions using the aruco cards infront of me !")
+    yield session.call("rie.dialogue.say", text="Now, let's try something different.. Answer my questions using the aruco cards infront of me !")
     dialogue_manager = Dialogue_card()
 
     # ask the geography card question
