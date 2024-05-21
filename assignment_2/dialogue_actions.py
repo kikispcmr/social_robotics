@@ -13,9 +13,8 @@ class DialogueBranches:
         self.session = session
 
     @inlineCallbacks
-    def base_smart_question_flow(self, questions,  action=None):
-        if questions[3] == True and action is not None:
-            action()
+    def base_smart_question_flow(self, questions):
+
         yield sleep(1)
 
         print("WE ARE HERE")
@@ -34,14 +33,16 @@ class DialogueBranches:
         return data, answer
 
     @inlineCallbacks
-    def smart_question_binary(self, session, questions):
-        _, answer = self.base_smart_question_flow(session, questions)
+    def smart_question_binary(self, questions, action):
+        if questions[3] == True and action is not None:
+            action()
+        _, answer = self.base_smart_question_flow(questions)
 
         if (answer == "true" and questions[1]) or (
             answer == "false" and not questions[1]
         ):
             # nod yes
-            session.call(
+            self.session.call(
                 "rom.actuator.motor.write",
                 frames=[
                     {"time": 400, "data": {"body.head.pitch": 0.15}},
@@ -52,32 +53,24 @@ class DialogueBranches:
                 force=True,
             )
             text = "That is correct." + questions[2]
-            yield session.call("rie.dialogue.say", text=text)
+            yield self.session.call("rie.dialogue.say", text=text)
         elif (answer == "true" and not questions[1]) or (
             answer == "false" and questions[1]
         ):
-            yield session.call("rie.dialogue.say", text="That is incorrect.")
+            yield self.session.call("rie.dialogue.say", text="That is incorrect.")
 
     @inlineCallbacks
     def smart_question_multiple(self, question, action=None):
         if question[3] == True and action is not None:
             action()
 
-<<<<<<< HEAD
-        # _, answer = yield self.base_smart_question_flow(self.session, question)
-=======
-        #_, answer = self.base_smart_question_flow(self.session, question)
->>>>>>> 41c109cffe4df7ae07aa74c2282931ee04344d98
         yield sleep(1)
         answer = yield self.session.call(
             "rie.dialogue.ask",
             question=question[0],
             answers={"true": ["true", "yes", "ja"], "false": ["false", "no", "nej"]},
         )
-<<<<<<< HEAD
-=======
-    
->>>>>>> 41c109cffe4df7ae07aa74c2282931ee04344d98
+
         yield self.session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
         yield sleep(1)
 

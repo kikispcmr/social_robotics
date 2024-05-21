@@ -28,11 +28,11 @@ questions = [
 
 
 @inlineCallbacks
-def dialogue_section(session, action_manager, dialogue_manager):
+def dialogue_section(action_manager, dialogue_manager):
 
     for question in questions:
 
-        yield dialogue_manager.base_smart_question_flow(
+        yield dialogue_manager.smart_question_binrary(
             question, action_manager.skiing_motion
         )
         yield sleep(1)
@@ -43,6 +43,7 @@ def main(session, details):
     action_manager = RobotActions(session)
     card_manager = DialogueCard()
     dialogue_manager = DialogueBranches(session)
+
     """session.subscribe(action_manager.touched, "rom.sensor.touch.stream")
 
     yield session.call("rie.vision.face.find")
@@ -60,13 +61,11 @@ def main(session, details):
     )"""
 
     # GAME SECTION
-
-    dialogue_section(session, action_manager, dialogue_manager)
+    dialogue_section(action_manager, dialogue_manager)
 
     ## END OF DIALOGUE GAME SECTION
 
     card_detected = yield session.call("rie.vision.card.read")
-    print(card_detected[0])
     yield session.call(
         "rie.dialogue.say",
         text="Let's try something different.. Answer my questions using the aruco cards infront of me !",
