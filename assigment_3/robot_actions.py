@@ -52,6 +52,6 @@ class RobotActions:
             # yield call("rie.dialogue.say", text="Ouch! Please don't touch me!")
             print("touch")
 
+    # Perform a specific movement from the internal dictionary of pre-built movements (made by us)
     def motion(self, movement: str):
-        print("Yes")
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
