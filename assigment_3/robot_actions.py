@@ -20,7 +20,7 @@ class RobotActions:
     def __init__(self, session):
         self.session = session
         self.movements = {
-            "skiing": skiing_frames,
+            "sad": sad_emotion,
         }
 
     def touched(self, frame):
