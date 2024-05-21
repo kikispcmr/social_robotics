@@ -35,8 +35,6 @@ skiing_frames = [
 
 class RobotActions:
 
-
-
     def __init__(self, session):
         self.session = session
         self.movements = {

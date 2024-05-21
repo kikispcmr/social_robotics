@@ -27,10 +27,26 @@ emotion_cards = {
     11: ("terror")
 }
 
+def detect_emotion(self, session):
+    session.call("rie.vision.card.stream")
+    card_detected = yield session.call("rie.vision.card.read")
+    card_id = card_detected[0]['data']['body'][0][5]
+    print("card detected : ", card_id)
+
+    yield session.subscribe(self.on_card, "rie.vision.card.stream")
+    yield session.call("rie.vision.card.stream")
+
+    detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
+    print(f"Detected emotion: {detected_emotion}")
+
+    return detected_emotion
 
 
 @inlineCallbacks
 def main(session, details):
+
+    emotion_detected = detect_emotion(session)
+    
 
     session.leave()
 
