@@ -1,41 +1,21 @@
-skiing_frames = [
+sad_emotion = [
     # starting position
         {
             "time": 400,
             "data": {
-                "body.arms.right.upper.pitch": -0.5,
-                "body.arms.left.upper.pitch": -0.5,
+                "body.head.pitch": -0.175,
             },
-        },
-        # right ski push
+        },  
         {
-            "time": 1000,
+            "time": 400,
             "data": {
-                "body.arms.right.upper.pitch": -1.0,
-                "body.arms.left.upper.pitch": 1.0,
+                "body.head.pitch": 0.175,
             },
-        },
-        # left ski push
-        {
-            "time": 2000,
-            "data": {
-                "body.arms.right.upper.pitch": 1.0,
-                "body.arms.left.upper.pitch": -1.0,
-            },
-        },
-        # return to starting position
-        {
-            "time": 2400,
-            "data": {
-                "body.arms.right.upper.pitch": -0.5,
-                "body.arms.left.upper.pitch": -0.5,
-            },
-        },
+        }
     ]
 
+
 class RobotActions:
-
-
 
     def __init__(self, session):
         self.session = session
