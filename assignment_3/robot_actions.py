@@ -14,19 +14,19 @@ sad_emotion = [
         },
     },
     {
-        "time": 800,
+        "time": 1400,
         "data": {
-            "body.head.pitch": 0.0,
-            "body.arms.left.upper.pitch": -0.5,
-            "body.arms.right.upper.pitch": -0.5,
-            "body.arms.left.lower.roll": -0.2,
-            "body.arms.right.lower.roll": -0.2,
+            "body.head.pitch": 0.175,
+            "body.arms.left.upper.pitch": -2.6,
+            "body.arms.right.upper.pitch": -2.6,
+            "body.arms.left.lower.roll": -1.75,
+            "body.arms.right.lower.roll": -1.75,
         },
     },
     {
-        "time": 1200,
+        "time": 2000,
         "data": {
-            "body.head.pitch": -0.175,
+            "body.head.pitch": 0.175,
             "body.arms.left.upper.pitch": -1.0,
             "body.arms.right.upper.pitch": -1.0,
             "body.arms.left.lower.roll": 0.0,
@@ -34,13 +34,23 @@ sad_emotion = [
         },
     },
     {
-        "time": 1600,
+        "time": 2400,
         "data": {
-            "body.head.pitch": -0.175,
+            "body.head.pitch": 0.0,
             "body.arms.left.upper.pitch": -1.0,
             "body.arms.right.upper.pitch": -1.0,
             "body.arms.left.lower.roll": 2.0,
             "body.arms.right.lower.roll": 2.0,
+        },
+    },
+    {
+        "time": 3000,
+        "data": {
+            "body.head.pitch": 0,
+            "body.arms.left.upper.pitch": 0,
+            "body.arms.right.upper.pitch": 0,
+            "body.arms.left.lower.roll": 0.0,
+            "body.arms.right.lower.roll": 0.0,
         },
     }
 ]
