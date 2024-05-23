@@ -26,9 +26,9 @@ def main():
         if key in key_mapping:
             intensity = key_mapping[key]
             if key in ['a', 's', 'd', 'f', 'g', 'h']:
-                drive_system.percieve_emotions("love and grief", intensity)
+                drive_system.percieve_emotions("emotion1", intensity)
             else:
-                drive_system.percieve_emotions("agression and submission", intensity)
+                drive_system.percieve_emotions("emotion2", intensity)
 
         else:
             print("Invalid key. Try again.")

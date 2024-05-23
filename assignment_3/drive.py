@@ -50,18 +50,20 @@ class DriveSystem():
     def emotion_function(self, intensity, perceptual_bar):
         # Map intensity to a value between -1 and 1
         intensity_factor = min(max(intensity / 3, -1), 1)
-
         # Update the perception meter with the intensity factor
         self.perception_meter[perceptual_bar] = max(
             min(self.perception_meter[perceptual_bar] + intensity_factor, 1), 0.01)
 
+        print(self.perception_meter)
+
     # Function that updates the bars based on the perceptual input
-    def percieve_emotions(self, emotion_group, intensity):
+    def percieve_emotions(self, emotion_group: str, intensity):
         # This dictates how many seconds until it chooses an emotion
-        self.last_response = 3 
-        if emotion_poles[emotion_group] == "emotion1":
+        print("D: ", emotion_group)
+        self.last_response = 3
+        if emotion_group == "emotion1":
             self.emotion_function(intensity, "emotion1")
-        elif emotion_poles[emotion_group] == "emotion2":
+        elif emotion_group == "emotion2":
             self.emotion_function(intensity, "emotion2")
 
     def perceptual_decay(self):
