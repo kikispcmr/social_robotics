@@ -34,6 +34,7 @@ negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehen
 
 positive_emotions = {"serenity", "joy", "ecstasy"}
 
+@inlineCallbacks
 def detect_emotion(self, session):
     session.call("rie.vision.card.stream")
     card_detected = yield session.call("rie.vision.card.read")
@@ -52,8 +53,9 @@ def detect_emotion(self, session):
 @inlineCallbacks
 def main(session, details):
     robot_actions = RobotActions(session)
+    yield robot_actions.move_negative()
     yield robot_actions.move_neutral()
-
+    yield robot_actions.move_positive()
 
     """
     detected_emotion = yield detect_emotion(session)
