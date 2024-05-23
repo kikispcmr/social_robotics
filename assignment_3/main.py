@@ -47,7 +47,8 @@ def detect_emotion(session):
     #yield session.call("rie.vision.card.stream")
 
     detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
-    print(f"Detected emotion: {detected_emotion[0]}")
+    detected_emotion = detected_emotion[0]
+    print(f"Detected emotion: {detected_emotion}")
 
     return detected_emotion
 
