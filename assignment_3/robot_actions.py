@@ -77,6 +77,60 @@ positive_emotion = [
                 "body.arms.right.lower.roll": 0.0,
                 "body.arms.left.lower.roll": 0.0
             },
+        },
+        {
+            "time": 1400,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": 1.0,
+                "body.arms.left.lower.roll": -1.0
+            },
+        },
+        {
+            "time": 1800,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": -1.0,
+                "body.arms.left.lower.roll": 1.0
+            },
+        },
+        {
+            "time": 2200,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": 1.0,
+                "body.arms.left.lower.roll": -1.0
+            },
+        },
+                {
+            "time": 2200,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": -1.0,
+                "body.arms.left.lower.roll": 1.0
+            },
+        },
+        {
+            "time": 2600,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": 0.0,
+                "body.arms.left.lower.roll": 0.0
+            },
+        },
+        {
+            "time": 2900,
+            "data": {
+                "body.arms.right.upper.pitch": 0,
+                "body.arms.left.upper.pitch": 0,
+                "body.arms.right.lower.roll": 0.0,
+                "body.arms.left.lower.roll": 0.0
+            },
         }
    ]
 
@@ -99,6 +153,7 @@ class RobotActions:
             print("touch")
 
     # Perform a specific movement from the internal dictionary of pre-built movements 
+    @inlineCallbacks
     def motion(self, movement: str):
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
 
@@ -139,7 +194,7 @@ class RobotActions:
         yield self.motion("positive")
         print("positive motion completed")
         # stop audio
-        yield sleep(5)
+        yield sleep(3)
         yield self.session.call("rom.actuator.audio.stop")
         print("Audio stopped")
 
@@ -148,7 +203,7 @@ class RobotActions:
     def move_neutral(self):
         # simply stands
         yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-        yield sleep(5) 
+        yield sleep(2) 
         print("neutral motion completed")
 
  

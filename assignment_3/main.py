@@ -11,7 +11,7 @@ wamp = Component(
 		"url": "ws://wamp.robotsindeklas.nl",
 		"serializers": ["msgpack"],
 	}],
-	realm="rie.664f05bdf26645d6dd2bfb28",
+	realm="rie.664eed4af26645d6dd2bfa31",
 )
 
 # aruco id mapping - 12 cards
@@ -44,7 +44,7 @@ def detect_emotion(session):
     print("card detected : ", card_id)
 
     #yield session.subscribe(on_card, "rie.vision.card.stream")
-    yield session.call("rie.vision.card.stream")
+    #yield session.call("rie.vision.card.stream")
 
     detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
     print(f"Detected emotion: {detected_emotion}")
@@ -58,12 +58,12 @@ def main(session, details):
     yield robot_actions.move_negative()
     yield robot_actions.move_neutral()
     yield robot_actions.move_positive()
-
+    '''print("started")
     detected_emotion = yield detect_emotion(session)
     if detected_emotion in negative_emotions:
-        yield robot_actions.move_sad()
+        yield robot_actions.move_negative()
     elif detected_emotion in positive_emotions:
-        yield robot_actions.move_happy()
+        yield robot_actions.move_positive()'''
     session.leave()
 
 
