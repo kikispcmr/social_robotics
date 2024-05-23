@@ -39,8 +39,8 @@ sad_emotion = [
             "body.head.pitch": -0.175,
             "body.arms.left.upper.pitch": -1.0,
             "body.arms.right.upper.pitch": -1.0,
-            "body.arms.left.lower.roll": 0.0,
-            "body.arms.right.lower.roll": 0.0,
+            "body.arms.left.lower.roll": 2.0,
+            "body.arms.right.lower.roll": 2.0,
         },
     }
 ]
