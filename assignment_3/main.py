@@ -58,15 +58,15 @@ def main(session, details):
     robot_actions = RobotActions(session)
     #yield robot_actions.move_negative()
     #yield robot_actions.move_neutral()
-    #yield robot_actions.move_positive()
-    print("started")
+    #yield robot_actions.move_positive(detect_emotion[1])
+    '''    print("started")
     detected_emotion = yield detect_emotion(session)
     if detected_emotion in negative_emotions:
         
         yield robot_actions.move_negative()
     elif detected_emotion in positive_emotions:
         yield robot_actions.move_positive()
-    session.leave()
+    session.leave()'''
 
 
 wamp.on_join(main)

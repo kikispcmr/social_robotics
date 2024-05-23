@@ -157,9 +157,21 @@ class RobotActions:
     def motion(self, movement: str):
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
 
+    @inlineCallbacks
+    def intensity_volume(self, intensity):
+        if abs(intensity) == 1:
+            loudness = 10
+        elif abs(intensity) == 2:
+            loudness = 20
+        elif abs(intensity) == 3:
+            loudness = 70
+        
+        yield self.session.call("rom.actuator.audio.volume", volume = loudness)
 
     @inlineCallbacks
-    def move_negative(self):
+    def move_negative(self, intensity = 1):
+
+        self.intensity_volume(intensity)
         # start audio stream
         yield self.session.call("rom.actuator.audio.stream",
             url="https://audio.jukehost.co.uk/SVmmjrrjwLIlNx6wu2yVy5skfTOZpxhg",
@@ -181,7 +193,8 @@ class RobotActions:
 
 
     @inlineCallbacks
-    def move_positive(self):
+    def move_positive(self, intensity = 1):
+        self.intensity_volume(intensity)
         # start audio stream
         yield self.session.call("rom.actuator.audio.stream",
             url="https://audio.jukehost.co.uk/lezvtSmppReALoBM2qHEly1ZICpNKs6t",
