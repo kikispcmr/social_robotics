@@ -1,18 +1,50 @@
+from autobahn.twisted.component import Component, run
+from twisted.internet.defer import inlineCallbacks
+from autobahn.twisted.util import sleep
+
 sad_emotion = [
-    # starting position
-        {
-            "time": 400,
-            "data": {
-                "body.head.pitch": -0.175,
-            },
-        },  
-        {
-            "time": 400,
-            "data": {
-                "body.head.pitch": 0.175,
-            },
-        }
-    ]
+    {
+        "time": 400,
+        "data": {
+            "body.head.pitch": -0.175,
+            "body.arms.left.upper.pitch": -1.0,
+            "body.arms.right.upper.pitch": -1.0,
+            "body.arms.left.lower.roll": 0.0,
+            "body.arms.right.lower.roll": 0.0,
+        },
+    },
+    {
+        "time": 800,
+        "data": {
+            "body.head.pitch": 0.0,
+            "body.arms.left.upper.pitch": -0.5,
+            "body.arms.right.upper.pitch": -0.5,
+            "body.arms.left.lower.roll": -0.2,
+            "body.arms.right.lower.roll": -0.2,
+        },
+    },
+    {
+        "time": 1200,
+        "data": {
+            "body.head.pitch": -0.175,
+            "body.arms.left.upper.pitch": -1.0,
+            "body.arms.right.upper.pitch": -1.0,
+            "body.arms.left.lower.roll": 0.0,
+            "body.arms.right.lower.roll": 0.0,
+        },
+    },
+    {
+        "time": 1600,
+        "data": {
+            "body.head.pitch": -0.175,
+            "body.arms.left.upper.pitch": -1.0,
+            "body.arms.right.upper.pitch": -1.0,
+            "body.arms.left.lower.roll": 0.0,
+            "body.arms.right.lower.roll": 0.0,
+        },
+    }
+]
+
 
 
 class RobotActions:
@@ -35,3 +67,20 @@ class RobotActions:
     # Perform a specific movement from the internal dictionary of pre-built movements (made by us)
     def motion(self, movement: str):
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
+
+    def move_sad(self):
+        # start audio stream
+        yield self.session.call("rom.actuator.audio.stream",
+            url="https://audio.jukehost.co.uk/SVmmjrrjwLIlNx6wu2yVy5skfTOZpxhg",
+            sync=False
+        )
+        print("Audio started")
+        
+        # do the movement
+        yield self.motion("sad")
+        print("Sad movement completed")
+        
+        # stop the audio
+        yield sleep(5)  # keep playing audio for 5 secs
+        yield self.session.call("rom.actuator.audio.stop")
+        print("Audio stopped")
