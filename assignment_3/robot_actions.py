@@ -52,8 +52,8 @@ sad_emotion = [
         "time": 1400,
         "data": {
             "body.head.pitch": 0.175,
-            "body.arms.left.upper.pitch": -2.6,
-            "body.arms.right.upper.pitch": -2.6,
+            "body.arms.left.upper.pitch": -1.5,
+            "body.arms.right.upper.pitch": -1.5,
             "body.arms.left.lower.roll": -1.75,
             "body.arms.right.lower.roll": -1.75,
         },
@@ -62,8 +62,8 @@ sad_emotion = [
         "time": 2000,
         "data": {
             "body.head.pitch": 0.175,
-            "body.arms.left.upper.pitch": -1.0,
-            "body.arms.right.upper.pitch": -1.0,
+            "body.arms.left.upper.pitch": -1.5,
+            "body.arms.right.upper.pitch": -1.5,
             "body.arms.left.lower.roll": 0.0,
             "body.arms.right.lower.roll": 0.0,
         },
