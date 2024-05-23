@@ -10,25 +10,24 @@ wamp = Component(
 	transports=[{
 		"url": "ws://wamp.robotsindeklas.nl",
 		"serializers": ["msgpack"],
-		"max_retries": 0
 	}],
 	realm="rie.664f05bdf26645d6dd2bfb28",
 )
 
 # aruco id mapping - 12 cards
 emotion_cards = {
-    0: ("serenity"),
-    1: ("joy"),
-    2: ("ecstasy"),
-    3: ("pensiveness"),
-    4: ("sadness"),
-    5: ("grief"),
-    6: ("annoyance"),
-    7: ("anger"),
-    8: ("rage"),
-    9: ("apprehension"),
-    10: ("fear"),
-    11: ("terror")
+    0: ("serenity", 1, "emotion1"),
+    1: ("joy", 2, "emotion1"),
+    2: ("ecstasy", 3, "emotion1"),
+    3: ("pensiveness", -1, "emotion1"),
+    4: ("sadness", -2, "emotion1"),
+    5: ("grief", -3, "emotion1"),
+    6: ("annoyance",-1, "emotion2"),
+    7: ("anger",-2, "emotion2"),
+    8: ("rage",-3, "emotion2"),
+    9: ("apprehension",1, "emotion2"),
+    10: ("fear",2, "emotion2"),
+    11: ("terror",3, "emotion2")
 }
 
 negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehension", "fear", "terror"}
