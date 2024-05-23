@@ -57,3 +57,4 @@ class RobotActions:
     # Perform a specific movement from the internal dictionary of pre-built movements 
     def motion(self, movement: str):
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
+
