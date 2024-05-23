@@ -1,14 +1,14 @@
-from aruco_actions import DialogueCard
+#from aruco_actions import DialogueCard
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
-from dialogue_actions import DialogueBranches
+#from dialogue_actions import DialogueBranches
 from robot_actions import RobotActions
 from twisted.internet.defer import inlineCallbacks
 
 TIMEOUT_TIME = 6000
 wamp = Component(
     transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.6645d299f26645d6dd2bcb28",
+    realm="rie.664f03fcf26645d6dd2bfb1a",
 )
 
 # aruco id mapping - 12 cards
@@ -49,11 +49,15 @@ def detect_emotion(self, session):
 @inlineCallbacks
 def main(session, details):
     robot_actions = RobotActions(session)
+    yield robot_actions.move_sad()
 
+    """
     detected_emotion = yield detect_emotion(session)
     if detected_emotion in negative_emotions:
         yield robot_actions.move_sad()
-
+    elif detected_emotion in positive_emotions:
+        yield robot_actions.move_happy()
+    """
     session.leave()
 
 
