@@ -90,6 +90,39 @@ sad_emotion = [
     }
 ]
 
+positive_movement = [
+    # starting position
+        {
+            "time": 400,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+            },
+        },
+        {
+            "time": 1000,
+            "data": {
+                "body.arms.right.lower.roll": -1.0,
+                "body.arms.left.lower.roll": 1.0,
+            },
+        },
+        """{
+            "time": 2000,
+            "data": {
+                "body.arms.right.upper.pitch": 1.0,
+                "body.arms.left.upper.pitch": -1.0,
+            },
+        },
+        # return to starting position
+        {
+            "time": 2400,
+            "data": {
+                "body.arms.right.upper.pitch": -0.5,
+                "body.arms.left.upper.pitch": -0.5,
+            },
+        },"""
+   ]
+
 # happy sound option :P https://audio.jukehost.co.uk/lezvtSmppReALoBM2qHEly1ZICpNKs6t
 
 class RobotActions:
@@ -98,6 +131,7 @@ class RobotActions:
         self.session = session
         self.movements = {
             "sad": sad_emotion,
+            "positive" : positive_movement,
         }
 
     def touched(self, frame):
@@ -131,3 +165,15 @@ class RobotActions:
         yield sleep(5)  # keep playing audio for 5 secs
         yield self.session.call("rom.actuator.audio.stop")
         print("Audio stopped")
+
+    def move_positive(self):
+        # start audio stream
+        yield self.session.call("rom.actuator.audio.stream",
+            url="https://audio.jukehost.co.uk/lezvtSmppReALoBM2qHEly1ZICpNKs6t",
+            sync=False
+        )
+        print("Audio started")
+
+        yield self.motion("positive")
+        print()
+        
