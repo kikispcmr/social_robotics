@@ -33,38 +33,6 @@ skiing_frames = [
         },
     ]
 
-positive_movement = [
-    # starting position
-        {
-            "time": 400,
-            "data": {
-                "body.arms.right.upper.pitch": -2.5,
-                "body.arms.left.upper.pitch": -2.5,
-            },
-        },
-        {
-            "time": 1000,
-            "data": {
-                "body.arms.right.lower.roll": -1.0,
-                "body.arms.left.lower.roll": 1.0,
-            },
-        },
-        """{
-            "time": 2000,
-            "data": {
-                "body.arms.right.upper.pitch": 1.0,
-                "body.arms.left.upper.pitch": -1.0,
-            },
-        },
-        # return to starting position
-        {
-            "time": 2400,
-            "data": {
-                "body.arms.right.upper.pitch": -0.5,
-                "body.arms.left.upper.pitch": -0.5,
-            },
-        },"""
-   ]
 
 class RobotActions:
 
