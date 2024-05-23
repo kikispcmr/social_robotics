@@ -65,8 +65,8 @@ positive_emotion = [
             "data": {
                 "body.arms.right.upper.pitch": -2.5,
                 "body.arms.left.upper.pitch": -2.5,
-                "body.arms.right.lower.roll": -1.0,
-                "body.arms.left.lower.roll": 1.0
+                "body.arms.right.lower.roll": 0,
+                "body.arms.left.lower.roll": 0
             },
         },
         {
@@ -106,7 +106,7 @@ positive_emotion = [
             },
         },
                 {
-            "time": 2200,
+            "time": 2600,
             "data": {
                 "body.arms.right.upper.pitch": -2.5,
                 "body.arms.left.upper.pitch": -2.5,
@@ -115,7 +115,7 @@ positive_emotion = [
             },
         },
         {
-            "time": 2600,
+            "time": 3000,
             "data": {
                 "body.arms.right.upper.pitch": -2.5,
                 "body.arms.left.upper.pitch": -2.5,
@@ -124,7 +124,7 @@ positive_emotion = [
             },
         },
         {
-            "time": 2900,
+            "time": 3400,
             "data": {
                 "body.arms.right.upper.pitch": 0,
                 "body.arms.left.upper.pitch": 0,
@@ -194,7 +194,7 @@ class RobotActions:
         yield self.motion("positive")
         print("positive motion completed")
         # stop audio
-        yield sleep(3)
+        yield sleep(1)
         yield self.session.call("rom.actuator.audio.stop")
         print("Audio stopped")
 

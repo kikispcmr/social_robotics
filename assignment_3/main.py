@@ -47,7 +47,7 @@ def detect_emotion(session):
     #yield session.call("rie.vision.card.stream")
 
     detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
-    print(f"Detected emotion: {detected_emotion}")
+    print(f"Detected emotion: {detected_emotion[0]}")
 
     return detected_emotion
 
@@ -55,15 +55,16 @@ def detect_emotion(session):
 @inlineCallbacks
 def main(session, details):
     robot_actions = RobotActions(session)
-    yield robot_actions.move_negative()
-    yield robot_actions.move_neutral()
-    yield robot_actions.move_positive()
-    '''print("started")
+    #yield robot_actions.move_negative()
+    #yield robot_actions.move_neutral()
+    #yield robot_actions.move_positive()
+    print("started")
     detected_emotion = yield detect_emotion(session)
     if detected_emotion in negative_emotions:
+        
         yield robot_actions.move_negative()
     elif detected_emotion in positive_emotions:
-        yield robot_actions.move_positive()'''
+        yield robot_actions.move_positive()
     session.leave()
 
 
