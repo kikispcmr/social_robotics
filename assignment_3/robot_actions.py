@@ -49,9 +49,9 @@ sad_emotion = [
     {
         "time": 3000,
         "data": {
-            "body.head.pitch": 0,
-            "body.arms.left.upper.pitch": 0,
-            "body.arms.right.upper.pitch": 0,
+            "body.head.pitch": 0.0,
+            "body.arms.left.upper.pitch": 0.0,
+            "body.arms.right.upper.pitch": 0.0,
             "body.arms.left.lower.roll": 0.0,
             "body.arms.right.lower.roll": 0.0,
         },
@@ -74,8 +74,8 @@ positive_emotion = [
             "data": {
                 "body.arms.right.upper.pitch": -2.5,
                 "body.arms.left.upper.pitch": -2.5,
-                "body.arms.right.lower.roll": -1.0,
-                "body.arms.left.lower.roll": 1.0
+                "body.arms.right.lower.roll": 0.0,
+                "body.arms.left.lower.roll": 0.0
             },
         }
    ]
@@ -101,7 +101,6 @@ class RobotActions:
     # Perform a specific movement from the internal dictionary of pre-built movements 
     def motion(self, movement: str):
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
-
 
 
     @inlineCallbacks
