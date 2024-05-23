@@ -31,13 +31,13 @@ negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehen
 
 positive_emotions = {"serenity", "joy", "ecstasy"}
 
-def detect_emotion(self, session):
+def detect_emotion(session):
     session.call("rie.vision.card.stream")
     card_detected = yield session.call("rie.vision.card.read")
     card_id = card_detected[0]['data']['body'][0][5]
     print("card detected : ", card_id)
 
-    yield session.subscribe(self.on_card, "rie.vision.card.stream")
+    #yield session.subscribe(on_card, "rie.vision.card.stream")
     yield session.call("rie.vision.card.stream")
 
     detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
@@ -51,13 +51,11 @@ def main(session, details):
     robot_actions = RobotActions(session)
     yield robot_actions.move_sad()
 
-    """
     detected_emotion = yield detect_emotion(session)
     if detected_emotion in negative_emotions:
         yield robot_actions.move_sad()
     elif detected_emotion in positive_emotions:
         yield robot_actions.move_happy()
-    """
     session.leave()
 
 
