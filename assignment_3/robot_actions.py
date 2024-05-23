@@ -175,5 +175,18 @@ class RobotActions:
         print("Audio started")
 
         yield self.motion("positive")
-        print()
+        print("positive motion completed")
+
+        # stop audio
+        yield sleep(5)
+        yield self.session.call("rom.actuator.audio.stop")
+        print("Audio stopped")
+
+    def move_neutral(self):
+        
+        # simply stands
+        yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
+        print("neutral motion completed")
+
+
         

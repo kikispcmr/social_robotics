@@ -7,8 +7,12 @@ from twisted.internet.defer import inlineCallbacks
 
 TIMEOUT_TIME = 6000
 wamp = Component(
-    transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.664f03fcf26645d6dd2bfb1a",
+	transports=[{
+		"url": "ws://wamp.robotsindeklas.nl",
+		"serializers": ["msgpack"],
+		"max_retries": 0
+	}],
+	realm="rie.664f05bdf26645d6dd2bfb28",
 )
 
 # aruco id mapping - 12 cards
@@ -49,7 +53,8 @@ def detect_emotion(self, session):
 @inlineCallbacks
 def main(session, details):
     robot_actions = RobotActions(session)
-    yield robot_actions.move_sad()
+    yield robot_actions.move_neutral()
+
 
     """
     detected_emotion = yield detect_emotion(session)
