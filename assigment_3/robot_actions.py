@@ -64,10 +64,12 @@ class RobotActions:
             # yield call("rie.dialogue.say", text="Ouch! Please don't touch me!")
             print("touch")
 
+    @inlineCallbacks
     # Perform a specific movement from the internal dictionary of pre-built movements (made by us)
     def motion(self, movement: str):
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
 
+    @inlineCallbacks
     def move_sad(self):
         # start audio stream
         yield self.session.call("rom.actuator.audio.stream",
