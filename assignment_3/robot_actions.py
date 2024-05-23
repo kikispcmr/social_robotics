@@ -65,13 +65,17 @@ positive_emotion = [
             "data": {
                 "body.arms.right.upper.pitch": -2.5,
                 "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": -1.0,
+                "body.arms.left.lower.roll": 1.0
             },
         },
         {
             "time": 1000,
             "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
                 "body.arms.right.lower.roll": -1.0,
-                "body.arms.left.lower.roll": 1.0,
+                "body.arms.left.lower.roll": 1.0
             },
         }
    ]
@@ -116,7 +120,7 @@ class RobotActions:
         
         # stop the audio
 
-        yield sleep(3)  # keep playing audio for 5 secs
+        yield sleep(5)  # keep playing audio for 5 secs
         yield self.session.call("rom.actuator.audio.stop")
         print("Audio stopped")
 
@@ -130,12 +134,13 @@ class RobotActions:
             sync=False
         )
 
+
         print("Positive audio started")
 
         yield self.motion("positive")
         print("positive motion completed")
         # stop audio
-        yield sleep(3)
+        yield sleep(5)
         yield self.session.call("rom.actuator.audio.stop")
         print("Audio stopped")
 
@@ -144,7 +149,7 @@ class RobotActions:
     def move_neutral(self):
         # simply stands
         yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-        yield sleep(3) 
+        yield sleep(5) 
         print("neutral motion completed")
 
  

@@ -12,7 +12,7 @@ wamp = Component(
 		"serializers": ["msgpack"],
 		"max_retries": 0
 	}],
-	realm="rie.664f03fcf26645d6dd2bfb1a",
+	realm="rie.664f05bdf26645d6dd2bfb28",
 )
 
 # aruco id mapping - 12 cards
