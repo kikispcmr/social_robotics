@@ -63,6 +63,7 @@ def main(session, details):
         yield robot_actions.move_negative()
     elif detected_emotion in positive_emotions:
         yield robot_actions.move_positive()
+    else: robot_actions.move_neutral()
     session.leave()
 
 
