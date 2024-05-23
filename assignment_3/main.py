@@ -7,31 +7,37 @@ from twisted.internet.defer import inlineCallbacks
 
 TIMEOUT_TIME = 6000
 wamp = Component(
-    transports=[{"url": "ws://wamp.robotsindeklas.nl", "serializers": ["msgpack"]}],
-    realm="rie.664f03fcf26645d6dd2bfb1a",
+	transports=[{
+		"url": "ws://wamp.robotsindeklas.nl",
+		"serializers": ["msgpack"],
+	}],
+	realm="rie.664f05bdf26645d6dd2bfb28",
 )
 
 # aruco id mapping - 12 cards
 emotion_cards = {
-    0: ("serenity"),
-    1: ("joy"),
-    2: ("ecstasy"),
-    3: ("pensiveness"),
-    4: ("sadness"),
-    5: ("grief"),
-    6: ("annoyance"),
-    7: ("anger"),
-    8: ("rage"),
-    9: ("apprehension"),
-    10: ("fear"),
-    11: ("terror")
+    0: ("serenity", 1, "emotion1"),
+    1: ("joy", 2, "emotion1"),
+    2: ("ecstasy", 3, "emotion1"),
+    3: ("pensiveness", -1, "emotion1"),
+    4: ("sadness", -2, "emotion1"),
+    5: ("grief", -3, "emotion1"),
+    6: ("annoyance",-1, "emotion2"),
+    7: ("anger",-2, "emotion2"),
+    8: ("rage",-3, "emotion2"),
+    9: ("apprehension",1, "emotion2"),
+    10: ("fear",2, "emotion2"),
+    11: ("terror",3, "emotion2")
 }
 
 negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehension", "fear", "terror"}
 
 positive_emotions = {"serenity", "joy", "ecstasy"}
 
+
+@inlineCallbacks
 def detect_emotion(session):
+
     session.call("rie.vision.card.stream")
     card_detected = yield session.call("rie.vision.card.read")
     card_id = card_detected[0]['data']['body'][0][5]
@@ -49,7 +55,9 @@ def detect_emotion(session):
 @inlineCallbacks
 def main(session, details):
     robot_actions = RobotActions(session)
-    yield robot_actions.move_sad()
+    yield robot_actions.move_negative()
+    yield robot_actions.move_neutral()
+    yield robot_actions.move_positive()
 
     detected_emotion = yield detect_emotion(session)
     if detected_emotion in negative_emotions:
