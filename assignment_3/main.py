@@ -1,7 +1,5 @@
-#from aruco_actions import DialogueCard
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
-#from dialogue_actions import DialogueBranches
 from robot_actions import RobotActions
 from twisted.internet.defer import inlineCallbacks 
 from drive import DriveSystem, emotion_poles, decay_loop
@@ -57,9 +55,6 @@ def detect_emotion(session):
             
         #print("card detected : ", card_id)
 
-    #yield session.subscribe(on_card, "rie.vision.card.stream")
-
-
     return detected_emotion
 
 
@@ -86,14 +81,9 @@ def main(session, details):
         yield sleep(1)
         print("still seconds: ", still_seconds)
         still_seconds -= 1
-        """
-    if detected_emotion in negative_emotions:
-        
-        yield robot_actions.move_negative()
-    elif detected_emotion in positive_emotions:
-        yield robot_actions.move_positive()
-    """
     session.leave()
+
+
 
 
 wamp.on_join(main)
