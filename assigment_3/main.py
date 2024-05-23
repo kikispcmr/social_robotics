@@ -28,7 +28,8 @@ emotion_cards = {
 }
 
 negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehension", "fear", "terror"}
-# add positive emotions
+
+positive_emotions = {"serenity", "joy", "ecstasy"}
 
 def detect_emotion(self, session):
     session.call("rie.vision.card.stream")
