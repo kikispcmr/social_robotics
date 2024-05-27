@@ -84,7 +84,7 @@ def main(session: Component, details: Any) -> Generator:
         if detected_emotion != None:
             # First argument is the detected emotion category, then the detected emotion intensity
             drive_system.percieve_emotions(detected_emotion[2], detected_emotion[1])
-            outcome = drive_system.update_all_meters()
+        outcome = drive_system.update_all_meters()
 
         # If the loop timeout is 0, then we get the highest response bar 
         if still_seconds == 0:
@@ -98,6 +98,13 @@ def main(session: Component, details: Any) -> Generator:
         yield sleep(1)
         print("still seconds: ", still_seconds)
         still_seconds -= 1
+    
+    if outcome == "neutral":
+        robot_actions.move_neutral() # TODO: add intensity_factor for the movement from outcome
+    elif outcome == "positive":
+        robot_actions.move_positive()
+    elif outcome == "negative":
+        robot_actions.move_negative()
     session.leave()
 
 

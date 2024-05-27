@@ -88,7 +88,7 @@ class DriveSystem():
         - Updates the perception meter with the intensity factor.
         """
         # Map intensity to a value between -1 and 1
-        intensity_factor = min(max(intensity / 3, -1), 1)
+        intensity_factor = min(max(intensity / 3, -1), 1) # TODO: return intensity factor within outcome in the main
         # Update the perception meter with the intensity factor
         self.perception_meter[perceptual_bar] = max(
             min(self.perception_meter[perceptual_bar] + intensity_factor, 1), 0.01)
