@@ -3,7 +3,7 @@ from autobahn.twisted.util import sleep
 from robot_actions import RobotActions
 from twisted.internet.defer import inlineCallbacks 
 from drive import DriveSystem, emotion_poles, decay_loop
-from typing import Generator, List
+from typing import Generator, List, Any
 TIMEOUT_TIME = 6000
 wamp = Component(
 	transports=[{
@@ -34,8 +34,9 @@ negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehen
 positive_emotions = {"serenity", "joy", "ecstasy"}
 
 still_seconds = 5
+
 @inlineCallbacks
-def detect_emotion(session):
+def detect_emotion(session: Component) -> Any: 
     global still_seconds
 
     detected_emotion = None 
@@ -43,6 +44,8 @@ def detect_emotion(session):
     
     card_detected = yield session.call("rie.vision.card.read", time = 100)
 
+
+    # Okay so we try to get the card id from the detected card
     try:
         card_id = card_detected[0]['data']['body'][0][5]
         yield session.call("rie.vision.card.stream")
@@ -50,19 +53,19 @@ def detect_emotion(session):
         detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
         still_seconds = 5
         print(f"Detected emotion: {detected_emotion}")
+        
     except:
         print("No card detected")
             
-        #print("card detected : ", card_id)
-
     return detected_emotion
 
 
 @inlineCallbacks
-def main(session, details):
+def main(session: Component, details: Any) -> Generator:
     global still_seconds
     robot_actions = RobotActions(session)
     drive_system = DriveSystem()
+    outcome = None
     #yield robot_actions.move_negative()
     #yield robot_actions.move_neutral()
     #yield robot_actions.move_positive()
@@ -70,11 +73,25 @@ def main(session, details):
 
 
     # We keep the loop going until it has no input for like 5 seconds
+    # Basic loop checking for incomming detected emotions 
     while(True):
         detected_emotion = yield detect_emotion(session)
 
         #drive_system.percieve_emotions(detected_emotion[2], detected_emotion[1]) 
+
+        # Assume we have detected an emotion. What's next is to pass this to the perceptive system 
+        # and let it update the perception meter
+        if detected_emotion != None:
+            # First argument is the detected emotion category, then the detected emotion intensity
+            drive_system.percieve_emotions(detected_emotion[2], detected_emotion[1])
+            outcome = drive_system.update_all_meters()
+
+        # If the loop timeout is 0, then we get the highest response bar 
         if still_seconds == 0:
+            outcome = drive_system.emotion_selector()
+            break
+        # Else if a threashold of a response bar is reached, we stop now 
+        elif outcome is not None:
             break
         # Also if an emotion threshold is reached, break
         # TODO: do that here 

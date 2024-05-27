@@ -1,5 +1,40 @@
 from drive import DriveSystem, emotion_poles, decay_loop
-import threading
+import threading, time, os 
+
+def decay_loop(drive):
+    while True:
+        drive.update()
+        print_meters(drive)
+        time.sleep(1)  # Wait for 1 second
+
+
+def print_meters(drive):
+    os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console
+
+    # Print the drive meter
+    drive_meter_bar = int(abs(drive.drive_meter) * 20)
+    drive_meter_display = "█" * drive_meter_bar + "░" * (20 - drive_meter_bar)
+    print(f"Drive Meter: [{drive_meter_display}] {drive.drive_meter:.2f}")
+
+    # Print the perception meters
+    perception_meter_display = []
+    for meter_name, meter_value in drive.perception_meter.items():
+        meter_bar = int(meter_value * 20)
+        meter_display = "█" * meter_bar + "░" * (20 - meter_bar)
+        perception_meter_display.append(f"{meter_name.capitalize()}: [{meter_display}] {meter_value:.2f}")
+
+    reaction_meter_display = []
+    for meter_name, meter_value in drive.response_meters.items():
+        meter_bar = int(meter_value * 20)
+        meter_display = "█" * meter_bar + "░" * (20 - meter_bar)
+        reaction_meter_display.append(f"{meter_name.capitalize()}: [{meter_display}] {meter_value:.2f}")
+    print("\n".join(perception_meter_display))
+    print("\n")
+    print("\n".join(reaction_meter_display))
+
+    # Wait for a short duration before refreshing
+    time.sleep(0.1)
+
 def main():
     # Create an instance of the DriveSystem class
     drive_system = DriveSystem()
