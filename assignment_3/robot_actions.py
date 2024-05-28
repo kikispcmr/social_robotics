@@ -159,7 +159,8 @@ class RobotActions:
     def intensity_volume(self, intensity):
         #loudness = 0 + (float(intensity - (-1)) / float(1- (-1)) * (100 - 0))
         
-        loudness = (intensity * 100)
+        loudness = round(intensity * 100)
+        print("loudness : ", loudness)
         yield self.session.call("rom.actuator.audio.volume", volume = loudness)
 
     @inlineCallbacks
@@ -208,7 +209,6 @@ class RobotActions:
     def move_neutral(self):
         # simply stands
         yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-        yield sleep(2) 
         print("neutral motion completed")
 
  

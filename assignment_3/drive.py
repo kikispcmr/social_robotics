@@ -21,7 +21,7 @@ class DriveSystem():
         Initializes a new instance of the DriveSystem class.
         """
         # DRIVE BARS
-        self.drive_meter = 0
+        self.drive_meter = 0.5
 
         # PERCEPTUAL BARS
         # Decay the perception meter intensity
@@ -167,9 +167,9 @@ class DriveSystem():
             elif self.drive_meter > 0.5:
                 self.drive_meter = max(self.drive_meter - 0.1, 0.5)
         elif emotion_difference < 0: 
-            self.drive_meter = max(self.drive_meter - 0.1, 0)  # Slowly decrease towards 0
+            self.drive_meter = max(self.drive_meter - abs(emotion_difference), 0)  # Slowly decrease towards 0
         elif emotion_difference > 0:
-            self.drive_meter = min(self.drive_meter + 0.1, 1)  # Slowly increase towards 1
+            self.drive_meter = min(self.drive_meter + abs(emotion_difference), 1)  # Slowly increase towards 1
 
         """
         print(emotion_difference)

@@ -6,13 +6,13 @@ from drive import DriveSystem, emotion_poles
 from typing import Generator, List, Any
 from drive_test import print_meters 
 TIMEOUT_TIME = 6000
-CARD_SESSION_TIME = 10
+CARD_SESSION_TIME = 5
 wamp = Component(
 	transports=[{
 		"url": "ws://wamp.robotsindeklas.nl",
 		"serializers": ["msgpack"],
 	}],
-	realm="rie.665584dcf26645d6dd2c1d8c",
+	realm="rie.665583e4f26645d6dd2c1d7c",
 )
 
 # aruco id mapping - 12 cards
@@ -23,12 +23,12 @@ emotion_cards = {
     3: ("pensiveness", -1, "emotion1"),
     4: ("sadness", -2, "emotion1"),
     5: ("grief", -3, "emotion1"),
-    6: ("annoyance",-1, "emotion2"),
-    7: ("anger",-2, "emotion2"),
-    8: ("rage",-3, "emotion2"),
-    9: ("apprehension",1, "emotion2"),
-    10: ("fear",2, "emotion2"),
-    11: ("terror",3, "emotion2")
+    6: ("boredom",-1, "emotion2"),
+    7: ("disgust",-2, "emotion2"),
+    8: ("loathing",-3, "emotion2"),
+    9: ("acceptance",1, "emotion2"),
+    10: ("trust",2, "emotion2"),
+    11: ("admiration",3, "emotion2")
 }
 
 negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehension", "fear", "terror"}
@@ -52,8 +52,6 @@ def detect_emotion(session: Component, drive) -> Any:
 
         detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
         still_seconds = CARD_SESSION_TIME
-        print(f"Detected emotion: {detected_emotion}")
-        
     except:
         print("No card detected")
      
@@ -64,6 +62,7 @@ def detect_emotion(session: Component, drive) -> Any:
 @inlineCallbacks
 def main(session: Component, details: Any) -> Generator:
     global still_seconds
+    still_seconds = CARD_SESSION_TIME
     robot_actions = RobotActions(session)
     drive_system = DriveSystem()
     outcome, outcome_intensity = None, None
@@ -73,6 +72,9 @@ def main(session: Component, details: Any) -> Generator:
     # Basic loop checking for incomming detected emotions 
     while(True):
         detected_emotion = yield detect_emotion(session, drive_system)
+
+        if detected_emotion is not None :
+            print("detected emotion: ", detected_emotion[0])
 
         #drive_system.percieve_emotions(detected_emotion[2], detected_emotion[1]) 
 
@@ -93,19 +95,14 @@ def main(session: Component, details: Any) -> Generator:
             break
         # Also if an emotion threshold is reached, break
         # TODO: do that here 
-        #yield sleep(1)
         print("still seconds: ", still_seconds)
         still_seconds -= 1
     
     if outcome == "neutral":
-        # TODO: add intensity_factor for the movement from outcome
-
         yield robot_actions.move_neutral() 
     elif outcome == "positive":
-        print("Audio ", outcome_intensity/2)
         yield robot_actions.move_positive(outcome_intensity/2)
     elif outcome == "negative":
-        print("Audio ", outcome_intensity/2)
         yield robot_actions.move_negative(outcome_intensity/2)
 
     drive_system.reset()
