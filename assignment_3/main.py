@@ -66,9 +66,6 @@ def main(session: Component, details: Any) -> Generator:
     robot_actions = RobotActions(session)
     drive_system = DriveSystem()
     outcome = None
-    #yield robot_actions.move_negative()
-    #yield robot_actions.move_neutral()
-    #yield robot_actions.move_positive()
     print("started")
 
 
@@ -105,7 +102,22 @@ def main(session: Component, details: Any) -> Generator:
         robot_actions.move_positive()
     elif outcome == "negative":
         robot_actions.move_negative()
-    session.leave()
+
+    # Ask if you want to continue the conversation ..
+    answers = {"yes": ["yeah", "yes", "ye", "okay"], "no": ["no", "nah", "nope"]} 
+    answer = yield session.call("rie.dialogue.ask", question="Would you like to continue the conversation?", answers=answers)
+
+    if answer == "yes": 
+        yield session.call("rie.dialogue.say", text="Yay ! Show me an emotion !") 
+    elif answer == "no": 
+        session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
+        yield session.call("rie.dialogue.say", text="Okay! Have a nice day ! Goodbye! ") 
+        session.leave()
+    else: 
+        yield session.call("rie.dialogue.say", text="Sorry, I couldn't hear you properly...")
+
+    # Loop again
+    main()
 
 
 
