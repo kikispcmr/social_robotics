@@ -6,6 +6,7 @@ from drive import DriveSystem, emotion_poles
 from typing import Generator, List, Any
 from drive_test import print_meters 
 TIMEOUT_TIME = 6000
+CARD_SESSION_TIME = 10
 wamp = Component(
 	transports=[{
 		"url": "ws://wamp.robotsindeklas.nl",
@@ -34,7 +35,7 @@ negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehen
 
 positive_emotions = {"serenity", "joy", "ecstasy"}
 
-still_seconds = 15
+still_seconds = CARD_SESSION_TIME
 
 @inlineCallbacks
 def detect_emotion(session: Component, drive) -> Any: 
@@ -50,7 +51,7 @@ def detect_emotion(session: Component, drive) -> Any:
         yield session.call("rie.vision.card.stream")
 
         detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
-        still_seconds = 15
+        still_seconds = CARD_SESSION_TIME
         print(f"Detected emotion: {detected_emotion}")
         
     except:
@@ -65,7 +66,7 @@ def main(session: Component, details: Any) -> Generator:
     global still_seconds
     robot_actions = RobotActions(session)
     drive_system = DriveSystem()
-    outcome = None
+    outcome, outcome_intensity = None, None
     #yield robot_actions.move_negative()
     #yield robot_actions.move_neutral()
     #yield robot_actions.move_positive()
@@ -84,14 +85,15 @@ def main(session: Component, details: Any) -> Generator:
         if detected_emotion != None:
             # First argument is the detected emotion category, then the detected emotion intensity
             drive_system.percieve_emotions(detected_emotion[2], detected_emotion[1])
-        outcome = drive_system.update_all_meters()
+        outcome, outcome_intensity = drive_system.update_all_meters()
 
         # If the loop timeout is 0, then we get the highest response bar 
         if still_seconds == 0:
-            outcome = drive_system.emotion_selector()
+            outcome, outcome_intensity = drive_system.emotion_selector()
             break
         # Else if a threashold of a response bar is reached, we stop now 
         elif outcome is not None:
+            print("Outcome: ", outcome, "Intensity: ", outcome_intensity)
             break
         # Also if an emotion threshold is reached, break
         # TODO: do that here 
@@ -100,12 +102,19 @@ def main(session: Component, details: Any) -> Generator:
         still_seconds -= 1
     
     if outcome == "neutral":
-        robot_actions.move_neutral() # TODO: add intensity_factor for the movement from outcome
+        # TODO: add intensity_factor for the movement from outcome
+
+        yield robot_actions.move_neutral() 
     elif outcome == "positive":
-        robot_actions.move_positive()
+        print("Audio ", outcome_intensity/2)
+        yield robot_actions.move_positive(outcome_intensity/2)
     elif outcome == "negative":
-        robot_actions.move_negative()
-    session.leave()
+        print("Audio ", outcome_intensity/2)
+        yield robot_actions.move_negative(outcome_intensity/2)
+
+    drive_system.reset()
+    main(session, details)
+    #session.leave()
 
 
 

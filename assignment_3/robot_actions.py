@@ -1,5 +1,3 @@
-from time import time
-from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 from twisted.internet.defer import inlineCallbacks
 
@@ -159,7 +157,9 @@ class RobotActions:
     @inlineCallbacks
     # Adjust intensity based on the intensity factor from the drive
     def intensity_volume(self, intensity):
-        loudness = 0 + (float(intensity - (-1)) / float(1- (-1)) * (100 - 0))
+        #loudness = 0 + (float(intensity - (-1)) / float(1- (-1)) * (100 - 0))
+        
+        loudness = (intensity * 100)
         yield self.session.call("rom.actuator.audio.volume", volume = loudness)
 
     @inlineCallbacks

@@ -1,5 +1,5 @@
 import numpy as np
-
+from typing import Any
 
 emotion_poles = {
     "love and grief" : "emotion1",
@@ -56,7 +56,14 @@ class DriveSystem():
                 return True
         return False
 
-    def update_all_meters(self) -> None | str:
+    def reset(self) -> None:
+        for key in self.perception_meter:
+            self.perception_meter[key] = 0
+        self.drive_meter = 0.5 
+        for key in self.response_meters:
+            self.response_meters[key] = 0
+
+    def update_all_meters(self) -> Any:
         """
         Updates all meters and returns the selected emotion if the last response counter reaches 0.
 
@@ -68,16 +75,17 @@ class DriveSystem():
         - Decreases the last response counter by 1.
         - If the last response counter reaches 0, it resets the counter to a large number and selects an emotion using the emotion_selector method.
         """
-        outcome = None
+        outcome  = None
+        intensity = 0.5
         self.perceptual_decay()
         self.update_drive()
         self.update_response_meters()
         self.decay_response_meters()
         if self.overwhelemed_check():
-            outcome = self.emotion_selector()
+            outcome, intensity = self.emotion_selector()
             print(self.emotion_selector())
 
-        return outcome
+        return outcome, intensity
 
     # INTENSITIES 
     # Function that determins how perceptual input affects the perceptual bars
@@ -90,10 +98,10 @@ class DriveSystem():
         - Updates the perception meter with the intensity factor.
         """
         # Map intensity to a value between -1 and 1
-        intensity_factor = min(max(intensity / 3, -1), 1) # TODO: return intensity factor within outcome in the main
+        intensity_factor = min(max(intensity / 3, -1), 1)
         # Update the perception meter with the intensity factor
         self.perception_meter[perceptual_bar] = max(
-            min(self.perception_meter[perceptual_bar] + intensity_factor, 1), 0.01)
+            min(self.perception_meter[perceptual_bar] + intensity_factor, 1), -1)
 
     # Function that updates the bars based on the perceptual input
     def percieve_emotions(self, emotion_group: str, intensity: float) -> None:
@@ -122,17 +130,15 @@ class DriveSystem():
         """
         # Decay the perception meter intensity
         for key in self.perception_meter:
-            self.perception_meter[key] = max(self.perception_meter[key] - 0.10, 0.01)
+            if self.perception_meter[key] >= 0:
+                self.perception_meter[key] = max(self.perception_meter[key] - 0.10, 0)
+            else:
+                self.perception_meter[key] = min(self.perception_meter[key] + 0.10, 0)
 
+    # This should hover around 0.5 
+    """
     def update_drive(self) -> None:
-        """
-        Updates the drive meter based on the difference between the perceived emotions.
 
-        The drive meter is updated based on the square of the absolute difference between the perceived intensities of 'emotion1' and 'emotion2'.
-        If the difference is between 0.1 and 0.5, the drive meter is decreased.
-        If the difference is greater than 0.5, the drive meter is increased.
-        If the difference is not in these ranges, the drive meter is decreased by a small constant.
-        """
         emotion_difference = self.perception_meter["emotion1"] - self.perception_meter["emotion2"]
         emotion_difference= abs(emotion_difference)
 
@@ -143,6 +149,37 @@ class DriveSystem():
             self.drive_meter = self.sig(self.drive_meter + drive_factor)
         else:
             self.drive_meter = max(self.drive_meter - 0.1, 0.01)
+    """
+    def update_drive(self) -> None:
+        """
+        Updates the drive meter based on the difference between the perceived emotions.
+
+        The drive meter is updated based on the square of the absolute difference between the perceived intensities of 'emotion1' and 'emotion2'.
+        If both perception meters are 0, the drive meter is set to 0.5 (equilibrium state).
+        If the perception meters are negative (between -1 and 0), the drive meter slowly decreases towards 0.
+        If the perception meters are positive (between 0 and 1), the drive meter slowly increases towards 1.
+        """
+        emotion_difference = self.perception_meter["emotion1"] + self.perception_meter["emotion2"]
+        emotion_difference = emotion_difference
+        if emotion_difference == 0:
+            if self.drive_meter < 0.5:
+                self.drive_meter = min(self.drive_meter + 0.1, 0.5)
+            elif self.drive_meter > 0.5:
+                self.drive_meter = max(self.drive_meter - 0.1, 0.5)
+        elif emotion_difference < 0: 
+            self.drive_meter = max(self.drive_meter - 0.1, 0)  # Slowly decrease towards 0
+        elif emotion_difference > 0:
+            self.drive_meter = min(self.drive_meter + 0.1, 1)  # Slowly increase towards 1
+
+        """
+        print(emotion_difference)
+        if emotion_difference < 0:
+            self.drive_meter = self.sig(self.drive_meter - emotion_difference)
+        elif emotion_difference > 0:
+            self.drive_meter = self.sig(self.drive_meter + emotion_difference)
+        else:
+            self.drive_meter = max(self.drive_meter - 0.1, 0.01)
+        """
 
     def update_response_meters(self) -> None:
         """
@@ -152,7 +189,7 @@ class DriveSystem():
         If the drive meter is between 0.33 and 0.66, the 'neutral' response meter is increased.
         If the drive meter is greater than 0.66, the 'positive' response meter is increased.
         """
-        if self.drive_meter > 0.2 and self.drive_meter < 0.33:
+        if self.drive_meter >= 0 and self.drive_meter < 0.33:
             self.response_meters["negative"] = min(self.response_meters["negative"] + 0.1, 1) 
         elif self.drive_meter >= 0.33 and self.drive_meter < 0.66:
             self.response_meters["neutral"] = min(self.response_meters["neutral"] + 0.1, 1) 
@@ -191,8 +228,8 @@ class DriveSystem():
             if max_val < val:
                 max_val = val
                 max_name = name 
-
-        return max_name
+        print(max_val)
+        return max_name, max_val
 
 
 
