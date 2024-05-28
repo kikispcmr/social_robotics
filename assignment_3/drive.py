@@ -38,8 +38,6 @@ class DriveSystem():
 
         }
 
-        self.last_response = 100000000
-
     def sig(self, x: float) -> float:
         """
         Calculates the sigmoid of a number.
@@ -51,6 +49,12 @@ class DriveSystem():
         - float: The sigmoid of the number.
         """
         return 1/(1 + np.exp(-x))
+
+    def overwhelemed_check(self) -> bool:
+        for meter in self.response_meters:
+            if self.response_meters[meter] == 1.0:
+                return True
+        return False
 
     def update_all_meters(self) -> None | str:
         """
@@ -69,9 +73,7 @@ class DriveSystem():
         self.update_drive()
         self.update_response_meters()
         self.decay_response_meters()
-        self.last_response -= 1
-        if self.last_response == 0:
-            self.last_response = 100000000
+        if self.overwhelemed_check():
             outcome = self.emotion_selector()
             print(self.emotion_selector())
 
@@ -105,7 +107,7 @@ class DriveSystem():
         """
         # This dictates how many seconds until it chooses an emotion
         print("D: ", emotion_group)
-        self.last_response = 3
+        #self.last_response = 3
         if emotion_group == "emotion1":
             self.emotion_function(intensity, "emotion1")
         elif emotion_group == "emotion2":
@@ -136,11 +138,11 @@ class DriveSystem():
 
         drive_factor = emotion_difference ** 2
         if emotion_difference < 0.5 and emotion_difference > 0.1:
-                self.drive_meter = self.sig(self.drive_meter - drive_factor)
+            self.drive_meter = self.sig(self.drive_meter - drive_factor)
         elif emotion_difference > 0.5:
             self.drive_meter = self.sig(self.drive_meter + drive_factor)
         else:
-        self.drive_meter = max(self.drive_meter - 0.1, 0.01)
+            self.drive_meter = max(self.drive_meter - 0.1, 0.01)
 
     def update_response_meters(self) -> None:
         """
@@ -150,7 +152,7 @@ class DriveSystem():
         If the drive meter is between 0.33 and 0.66, the 'neutral' response meter is increased.
         If the drive meter is greater than 0.66, the 'positive' response meter is increased.
         """
-        if self.drive_meter >= 0 and self.drive_meter < 0.33:
+        if self.drive_meter > 0.2 and self.drive_meter < 0.33:
             self.response_meters["negative"] = min(self.response_meters["negative"] + 0.1, 1) 
         elif self.drive_meter >= 0.33 and self.drive_meter < 0.66:
             self.response_meters["neutral"] = min(self.response_meters["neutral"] + 0.1, 1) 

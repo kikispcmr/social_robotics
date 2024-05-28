@@ -1,9 +1,9 @@
-from drive import DriveSystem, emotion_poles, decay_loop
+from drive import DriveSystem, emotion_poles 
 import threading, time, os 
 
 def decay_loop(drive):
     while True:
-        drive.update()
+        drive.update_all_meters()
         print_meters(drive)
         time.sleep(1)  # Wait for 1 second
 
@@ -31,7 +31,6 @@ def print_meters(drive):
     print("\n".join(perception_meter_display))
     print("\n")
     print("\n".join(reaction_meter_display))
-
     # Wait for a short duration before refreshing
     time.sleep(0.1)
 
@@ -40,7 +39,7 @@ def main():
     drive_system = DriveSystem()
     thread = threading.Thread(target=decay_loop, args=(drive_system,), daemon=True)
     thread.start()
-        # Define a mapping between keys and intensities
+    # Define a mapping between keys and intensities
     key_mapping = {
         'a': 1, 's': 2, 'd': 3, 'f': -1, 'g': -2, 'h': -3,  # emotion1
         'q': 1, 'w': 2, 'e': 3, 'r': -1, 't': -2, 'y': -3,  # emotion2
