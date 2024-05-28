@@ -98,6 +98,13 @@ def main(session: Component, details: Any) -> Generator:
         #yield sleep(1)
         print("still seconds: ", still_seconds)
         still_seconds -= 1
+    
+    if outcome == "neutral":
+        robot_actions.move_neutral() # TODO: add intensity_factor for the movement from outcome
+    elif outcome == "positive":
+        robot_actions.move_positive()
+    elif outcome == "negative":
+        robot_actions.move_negative()
     session.leave()
 
 

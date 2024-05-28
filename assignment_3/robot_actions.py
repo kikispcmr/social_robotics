@@ -149,7 +149,6 @@ class RobotActions:
             or "body.head.middle" in frame["data"]
             or "body.head.rear" in frame["data"]
         ):
-            # yield call("rie.dialogue.say", text="Ouch! Please don't touch me!")
             print("touch")
 
     # Perform a specific movement from the internal dictionary of pre-built movements 
@@ -158,18 +157,13 @@ class RobotActions:
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
 
     @inlineCallbacks
+    # Adjust intensity based on the intensity factor from the drive
     def intensity_volume(self, intensity):
-        if abs(intensity) == 1:
-            loudness = 10
-        elif abs(intensity) == 2:
-            loudness = 20
-        elif abs(intensity) == 3:
-            loudness = 70
-        
+        loudness = 0 + (float(intensity - (-1)) / float(1- (-1)) * (100 - 0))
         yield self.session.call("rom.actuator.audio.volume", volume = loudness)
 
     @inlineCallbacks
-    def move_negative(self, intensity = 1):
+    def move_negative(self, intensity = -0.5):
 
         self.intensity_volume(intensity)
         # start audio stream
@@ -181,7 +175,6 @@ class RobotActions:
         
         # do the movement
         yield self.motion("negative")
-
         print("Sad movement completed")
         
         # stop the audio
@@ -193,19 +186,18 @@ class RobotActions:
 
 
     @inlineCallbacks
-    def move_positive(self, intensity = 1):
+    def move_positive(self, intensity = -0.5):
         self.intensity_volume(intensity)
         # start audio stream
         yield self.session.call("rom.actuator.audio.stream",
             url="https://audio.jukehost.co.uk/lezvtSmppReALoBM2qHEly1ZICpNKs6t",
             sync=False
         )
-
-
         print("Positive audio started")
 
         yield self.motion("positive")
         print("positive motion completed")
+
         # stop audio
         yield sleep(1)
         yield self.session.call("rom.actuator.audio.stop")
