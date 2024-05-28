@@ -1,10 +1,6 @@
 import numpy as np
+import os, time
 from typing import Any
-
-emotion_poles = {
-    "love and grief" : "emotion1",
-    "agression and submission" : "emotion2",
-}
 
 class DriveSystem():
     """
@@ -35,7 +31,6 @@ class DriveSystem():
             "positive": 0,
             "neutral" : 0, 
             "negative" : 0
-
         }
 
     def sig(self, x: float) -> float:
@@ -51,17 +46,17 @@ class DriveSystem():
         return 1/(1 + np.exp(-x))
 
     def overwhelemed_check(self) -> bool:
+        """
+        Checks if any of the response meters is full (1.0).
+        If any meter is full, the robot is considered overwhelmed.
+
+        Returns:
+        bool: True if the robot is overwhelmed, False otherwise.
+        """
         for meter in self.response_meters:
             if self.response_meters[meter] == 1.0:
                 return True
         return False
-
-    def reset(self) -> None:
-        for key in self.perception_meter:
-            self.perception_meter[key] = 0
-        self.drive_meter = 0.5 
-        for key in self.response_meters:
-            self.response_meters[key] = 0
 
     def update_all_meters(self) -> Any:
         """
@@ -83,7 +78,6 @@ class DriveSystem():
         self.decay_response_meters()
         if self.overwhelemed_check():
             outcome, intensity = self.emotion_selector()
-            print(self.emotion_selector())
 
         return outcome, intensity
 
@@ -114,8 +108,6 @@ class DriveSystem():
         - If the perceived emotion is 'emotion2', it updates the 'emotion2' perception meter with the intensity.
         """
         # This dictates how many seconds until it chooses an emotion
-        print("D: ", emotion_group)
-        #self.last_response = 3
         if emotion_group == "emotion1":
             self.emotion_function(intensity, "emotion1")
         elif emotion_group == "emotion2":
@@ -135,29 +127,23 @@ class DriveSystem():
             else:
                 self.perception_meter[key] = min(self.perception_meter[key] + 0.10, 0)
 
-    # This should hover around 0.5 
-    """
-    def update_drive(self) -> None:
 
-        emotion_difference = self.perception_meter["emotion1"] - self.perception_meter["emotion2"]
-        emotion_difference= abs(emotion_difference)
 
-        drive_factor = emotion_difference ** 2
-        if emotion_difference < 0.5 and emotion_difference > 0.1:
-            self.drive_meter = self.sig(self.drive_meter - drive_factor)
-        elif emotion_difference > 0.5:
-            self.drive_meter = self.sig(self.drive_meter + drive_factor)
-        else:
-            self.drive_meter = max(self.drive_meter - 0.1, 0.01)
-    """
     def update_drive(self) -> None:
         """
-        Updates the drive meter based on the difference between the perceived emotions.
+        Updates the drive meter based on the current values of the perception meters for emotion1 and emotion2.
 
-        The drive meter is updated based on the square of the absolute difference between the perceived intensities of 'emotion1' and 'emotion2'.
-        If both perception meters are 0, the drive meter is set to 0.5 (equilibrium state).
-        If the perception meters are negative (between -1 and 0), the drive meter slowly decreases towards 0.
-        If the perception meters are positive (between 0 and 1), the drive meter slowly increases towards 1.
+        The drive meter is adjusted according to the following rules:
+
+        1. If the sum of emotion1 and emotion2 perception meters is 0:
+            - If the current drive meter is less than 0.5, it is increased by 0.1 (up to a maximum of 0.5).
+            - If the current drive meter is greater than 0.5, it is decreased by 0.1 (down to a minimum of 0.5).
+
+        2. If the sum of emotion1 and emotion2 perception meters is negative:
+            - The drive meter is decreased by the absolute value of the sum, but not below 0.
+
+        3. If the sum of emotion1 and emotion2 perception meters is positive:
+            - The drive meter is increased by the absolute value of the sum, but not above 1.
         """
         emotion_difference = self.perception_meter["emotion1"] + self.perception_meter["emotion2"]
         emotion_difference = emotion_difference
@@ -167,19 +153,10 @@ class DriveSystem():
             elif self.drive_meter > 0.5:
                 self.drive_meter = max(self.drive_meter - 0.1, 0.5)
         elif emotion_difference < 0: 
-            self.drive_meter = max(self.drive_meter - abs(emotion_difference), 0)  # Slowly decrease towards 0
+            self.drive_meter = max(self.drive_meter - abs(emotion_difference), 0) 
         elif emotion_difference > 0:
-            self.drive_meter = min(self.drive_meter + abs(emotion_difference), 1)  # Slowly increase towards 1
+            self.drive_meter = min(self.drive_meter + abs(emotion_difference), 1) 
 
-        """
-        print(emotion_difference)
-        if emotion_difference < 0:
-            self.drive_meter = self.sig(self.drive_meter - emotion_difference)
-        elif emotion_difference > 0:
-            self.drive_meter = self.sig(self.drive_meter + emotion_difference)
-        else:
-            self.drive_meter = max(self.drive_meter - 0.1, 0.01)
-        """
 
     def update_response_meters(self) -> None:
         """
@@ -228,8 +205,43 @@ class DriveSystem():
             if max_val < val:
                 max_val = val
                 max_name = name 
-        print(max_val)
         return max_name, max_val
 
 
+    def print_meters(self):
+        """
+        Prints the current state of the drive meter, perception meters, and response meters to the console.
 
+        This method clears the console and then prints the following information:
+
+        1. Drive Meter: A bar representation of the current drive meter value, along with the numerical value.
+        2. Perception Meters: A list of perception meters, each with a bar representation and numerical value.
+        3. Response Meters: A list of response meters, each with a bar representation and numerical value.
+
+        The bar representations are created using Unicode characters for filled (█) and empty (░) blocks.
+        The length of the bar is proportional to the meter value, with a maximum length of 20 characters.
+        """
+        os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console
+
+        # Print the drive meter
+        drive_meter_bar = int(abs(self.drive_meter) * 20)
+        drive_meter_display = "█" * drive_meter_bar + "░" * (20 - drive_meter_bar)
+        print(f"Drive Meter: [{drive_meter_display}] {self.drive_meter:.2f}")
+
+        # Print the perception meters
+        perception_meter_display = []
+        for meter_name, meter_value in self.perception_meter.items():
+            meter_bar = int(meter_value * 20)
+            meter_display = "█" * meter_bar + "░" * (20 - meter_bar)
+            perception_meter_display.append(f"{meter_name.capitalize()}: [{meter_display}] {meter_value:.2f}")
+
+        reaction_meter_display = []
+        for meter_name, meter_value in self.response_meters.items():
+            meter_bar = int(meter_value * 20)
+            meter_display = "█" * meter_bar + "░" * (20 - meter_bar)
+            reaction_meter_display.append(f"{meter_name.capitalize()}: [{meter_display}] {meter_value:.2f}")
+        print("\n".join(perception_meter_display))
+        print("\n")
+        print("\n".join(reaction_meter_display))
+        # Wait for a short duration before refreshing
+        time.sleep(0.1)

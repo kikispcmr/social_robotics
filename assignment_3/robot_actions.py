@@ -1,8 +1,6 @@
 from autobahn.twisted.util import sleep
 from twisted.internet.defer import inlineCallbacks
 
-
-
 sad_emotion = [
     {
         "time": 400,
@@ -147,7 +145,6 @@ class RobotActions:
             or "body.head.middle" in frame["data"]
             or "body.head.rear" in frame["data"]
         ):
-            print("touch")
 
     # Perform a specific movement from the internal dictionary of pre-built movements 
     @inlineCallbacks
@@ -157,10 +154,7 @@ class RobotActions:
     @inlineCallbacks
     # Adjust intensity based on the intensity factor from the drive
     def intensity_volume(self, intensity):
-        #loudness = 0 + (float(intensity - (-1)) / float(1- (-1)) * (100 - 0))
-        
         loudness = round(intensity * 100)
-        print("loudness : ", loudness)
         yield self.session.call("rom.actuator.audio.volume", volume = loudness)
 
     @inlineCallbacks
@@ -172,17 +166,13 @@ class RobotActions:
             url="https://audio.jukehost.co.uk/SVmmjrrjwLIlNx6wu2yVy5skfTOZpxhg",
             sync=False
         )
-        print("Audio started")
         
         # do the movement
         yield self.motion("negative")
-        print("Sad movement completed")
         
         # stop the audio
-
         yield sleep(5)  # keep playing audio for 5 secs
         yield self.session.call("rom.actuator.audio.stop")
-        print("Audio stopped")
 
 
 
@@ -194,21 +184,17 @@ class RobotActions:
             url="https://audio.jukehost.co.uk/lezvtSmppReALoBM2qHEly1ZICpNKs6t",
             sync=False
         )
-        print("Positive audio started")
 
         yield self.motion("positive")
-        print("positive motion completed")
 
         # stop audio
         yield sleep(1)
         yield self.session.call("rom.actuator.audio.stop")
-        print("Audio stopped")
 
 
     @inlineCallbacks
     def move_neutral(self):
         # simply stands
         yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-        print("neutral motion completed")
 
  
