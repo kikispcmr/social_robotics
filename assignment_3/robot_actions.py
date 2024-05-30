@@ -138,14 +138,7 @@ class RobotActions:
             "negative": sad_emotion,
             "positive" : positive_emotion,
         }
-
-    def touched(self, frame):
-        if (
-            "body.head.front" in frame["data"]
-            or "body.head.middle" in frame["data"]
-            or "body.head.rear" in frame["data"]
-        ):
-
+    
     # Perform a specific movement from the internal dictionary of pre-built movements 
     @inlineCallbacks
     def motion(self, movement: str):
