@@ -16,7 +16,7 @@ emotion_cards = {
 
 emotion_poles = {
     "love and grief" : "emotion1",
-    "agression and submission" : "emotion2",
+    "remorse and submission" : "emotion2",
 }
 
 negative_emotions = {"sadness", "grief", "annoyance", "anger", "rage", "apprehension", "fear", "terror"}
