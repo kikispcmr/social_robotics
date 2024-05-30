@@ -6,12 +6,12 @@ emotion_cards = {
     3: ("pensiveness", -1, "emotion1"),
     4: ("sadness", -2, "emotion1"),
     5: ("grief", -3, "emotion1"),
-    6: ("annoyance",-1, "emotion2"),
-    7: ("anger",-2, "emotion2"),
-    8: ("rage",-3, "emotion2"),
-    9: ("apprehension",1, "emotion2"),
-    10: ("fear",2, "emotion2"),
-    11: ("terror",3, "emotion2")
+    6: ("boredom",-1, "emotion2"),
+    7: ("disgust",-2, "emotion2"),
+    8: ("loathing",-3, "emotion2"),
+    9: ("acceptance",1, "emotion2"),
+    10: ("trust",2, "emotion2"),
+    11: ("admiration", 3, "emotion2")
 }
 
 emotion_poles = {
