@@ -26,11 +26,17 @@ def on_keyword(frame, session):
             yield session.call("rie.dialogue.say", text="Starting Game 3")
             game_3.start_game(session)
         else:
-            yield session.call("rie.dialogue.say", text="I didn't understand that. Please say 'Game 1', 'Game 2', or 'Game 3'.")
+            yield session.call("rie.dialogue.say", text="I didn't understand that. Please say whether you want to play 'Game 1', 'Game 2', or 'Game 3'.")
 
 @inlineCallbacks
 def main(session, details):
-    yield session.call("rie.dialogue.say", text="Hello! I'm your friendly robot.")
+    # Start by seeking for participants
+    yield session.call("rie.vision.face.find")
+    yield session.call(
+        "rom.optional.behavior.play", name="BlocklyWaveRightArm"
+    )
+
+    yield session.call("rie.dialogue.say", text="Hello! I'm your friendly robot. Today, we will learn some Geography together.")
     yield session.call("rie.dialogue.say", text="Which game would you like to play? Please say 'Game 1', 'Game 2', or 'Game 3'.")
     yield session.call("rie.dialogue.keyword.add", keywords=["game 1", "game 2", "game 3"])
     yield session.subscribe(on_keyword, "rie.dialogue.keyword.stream")
