@@ -1,6 +1,6 @@
 # DriveSystem Simulation for Emotional Response
 
-This script simulates an emotional response system using a DriveSystem class. It is designed to interact with a robot to provide dynamic and empathetic emotional responses based on perceived inputs.
+We allow the user to show Aruco cards to the robot, each representing different emotions. Based on the shown cards or an combination of them, the system calculates whether it is appropriate to express neutral, negative or positive emotion via a drive system, implemented in the DriveSystem class. It is designed to interact with a robot to provide dynamic and empathetic emotional responses based on perceived inputs.
 
 ## Prerequisites
 
