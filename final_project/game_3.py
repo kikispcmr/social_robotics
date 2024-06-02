@@ -122,16 +122,13 @@ class CardUsage:
                 
                 attempts += 1
 
-
+    
     @inlineCallbacks
     def wait_for_correct_flag(self, correct_card_id):
-        
-        card_detected = self.detect_card()
+        card_detected = yield self.detect_card()
         yield self.session.call("rie.vision.card.stream")
-        
-        if card_detected == correct_card_id: # check card is correct
-            return True
-        return False
+        return card_detected == correct_card_id
+
     
     def detect_card(self):
         print("entered")
@@ -158,17 +155,16 @@ class Levels:
 
     @inlineCallbacks
     def medium(self):
-        # Medium Level
-
-        for question in range(len(questions) - 1):
-            if smart_question_binary(self.session, questions[question]):
+        for question in questions[:-1]:
+            if (yield smart_question_binary(self.session, question)):
                 self.score += 1
-            
         
         if self.score < 4:
             yield self.session.call("rie.dialogue.say", text="You are doing so well, you deserve a bonus question! Answer the following extra bonus question correctly for an additional point?")
-            if smart_question_binary(self.session, questions[-1]):
+            if (yield smart_question_binary(self.session, questions[-1])):  # Ask the last question separately
                 self.score += 1
+
+
 
     @inlineCallbacks
     def hard(self):
@@ -196,6 +192,7 @@ class Levels:
             self.score += 1
 
         yield self.session.call("rie.dialogue.config.language", lang="en")
+        
 
 
 
