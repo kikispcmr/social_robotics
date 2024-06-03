@@ -2,11 +2,11 @@ from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 import random
-from game_3_drive import DriveSystem 
+from final_project.game_3_code.game_3_drive import DriveSystem 
 from typing import Generator, Any
-from game_3_emotion_mapping import emotion_cards
-from game_3_robot_actions import RobotActions
-from game_3_info import encouragement_sentences, positive_feedback_sentences, flag_cards, questions, score_feedback
+from final_project.game_3_code.game_3_emotion_mapping import emotion_cards
+from final_project.game_3_code.game_3_robot_actions import RobotActions
+from final_project.game_3_code.game_3_info import encouragement_sentences, positive_feedback_sentences, flag_cards, questions, score_feedback
 
 def get_feedback_message(score):
     for score_range, message in score_feedback.items():
@@ -175,25 +175,63 @@ class Levels:
 
         yield self.session.call("rie.dialogue.config.language", lang="en")
 
+class EmpathyModule:
+    def __init__(self, session):
+        self.session = session
+        self.robot_actions = RobotActions(session)
+        self.drive_system = DriveSystem()
+        self.outcome = None
+        self.outcome_intensity = None
 
-@inlineCallbacks
-def detect_emotion(session: Component) -> Any: 
-    global still_seconds
+    @inlineCallbacks
+    def detect_emotion(self):
+        global still_seconds
 
-    detected_emotion = None 
-    session.call("rie.vision.card.stream")
-    
-    card_detected = yield session.call("rie.vision.card.read", time = 1000)
-    # Okay so we try to get the card id from the detected card
-    try:
-        card_id = card_detected[0]['data']['body'][0][5]
-        yield session.call("rie.vision.card.stream")
+        detected_emotion = None
+        self.session.call("rie.vision.card.stream")
 
-        detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
-        still_seconds = CARD_SESSION_TIME
-    except:
-        pass
-    return detected_emotion
+        card_detected = yield self.session.call("rie.vision.card.read", time=1000)
+        try:
+            card_id = card_detected[0]['data']['body'][0][5]
+            yield self.session.call("rie.vision.card.stream")
+
+            detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
+            still_seconds = CARD_SESSION_TIME
+        except:
+            pass
+        return detected_emotion
+
+    @inlineCallbacks
+    def process_emotion(self):
+        global still_seconds
+
+        while True:
+            detected_emotion = yield self.detect_emotion()
+            self.drive_system.print_meters()
+            if detected_emotion is not None:
+                self.drive_system.perceive_emotions(detected_emotion[2], detected_emotion[1])
+            self.outcome, self.outcome_intensity = self.drive_system.update_all_meters()
+
+            if still_seconds == 0:
+                self.outcome, self.outcome_intensity = self.drive_system.emotion_selector()
+                break
+            elif self.outcome is not None:
+                print("Outcome: ", self.outcome, "Intensity: ", self.outcome_intensity)
+                break
+            print("still seconds: ", still_seconds)
+            still_seconds -= 1
+
+    @inlineCallbacks
+    def express_empathy(self):
+        if self.outcome == "neutral":
+            yield self.robot_actions.move_neutral()
+            yield self.session.call("rie.dialogue.say", text="I see.")
+        elif self.outcome == "positive":
+            yield self.robot_actions.move_positive(self.outcome_intensity / 2)
+            yield self.session.call("rie.dialogue.say", text="Wow, you seem really pleased! I'm delighted that you're enjoying the game so much.")
+        elif self.outcome == "negative":
+            yield self.robot_actions.move_negative(self.outcome_intensity / 2)
+            yield self.session.call("rie.dialogue.say", text="It sounds like you're a bit discouraged. I understand, learning new things isn't always easy. But I believe in you - let's break it down and try again together.")
 
 
 
@@ -248,44 +286,11 @@ def start_game(session):
     yield session.call("rie.dialogue.say", text=f"You have completed the challenge! Well done! Your final score is {final_score} out of 10. {feedback_message}")
     yield sleep(2)
 
-    global still_seconds
-
-    robot_actions = RobotActions(session)
-    drive_system = DriveSystem()
-    outcome, outcome_intensity = None, None
-
     yield session.call("rie.dialogue.say", text="How do you feel now that you have completed the challenge?")
 
-    while(True):
-        detected_emotion = yield detect_emotion(session)
-        drive_system.print_meters()
-        if detected_emotion != None:
-            # First argument is the detected emotion category, then the detected emotion intensity
-            drive_system.percieve_emotions(detected_emotion[2], detected_emotion[1])
-        outcome, outcome_intensity = drive_system.update_all_meters()
-
-        # If the loop timeout is 0, then we get the highest response bar
-        if still_seconds == 0:
-            outcome, outcome_intensity = drive_system.emotion_selector()
-            break
-        # Else if a threashold of a response bar is reached, we stop now 
-        elif outcome is not None:
-            print("Outcome: ", outcome, "Intensity: ", outcome_intensity)
-            break
-        # Also if an emotion threshold is reached, break
-        print("still seconds: ", still_seconds)
-        still_seconds -= 1
-    
-    # If the outcome is anything but None, it will perform the required action
-    if outcome == "neutral":
-        yield robot_actions.move_neutral()
-        yield session.call("rie.dialogue.say", text="I see.") 
-    elif outcome == "positive":
-        yield robot_actions.move_positive(outcome_intensity/2)
-        yield session.call("rie.dialogue.say", text="Wow, you seem really pleased! I'm delighted that you're enjoying the game so much.") 
-    elif outcome == "negative":
-        yield robot_actions.move_negative(outcome_intensity/2)
-        yield session.call("rie.dialogue.say", text="It sounds like you're a bit discouraged. I understand, learning new things isn't always easy. But I believe in you - let's break it down and try again together.") 
+    empathy_module = EmpathyModule(session)
+    yield empathy_module.process_emotion()
+    yield empathy_module.express_empathy()
 
 
     answer = yield session.call("rie.dialogue.ask", question="You did very good for your first time doing this challenge. Would you like to play again and beat your high-score?", answers=answers)

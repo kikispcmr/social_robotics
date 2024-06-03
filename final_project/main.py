@@ -2,8 +2,8 @@ from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep
 import game_1 # mathias
-import game_2 # vic
-import game_3 # kyriakos
+import game_2 # kyriakos
+from game_3_code import game_3 # vic
 
 wamp = Component(
     transports=[{
