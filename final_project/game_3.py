@@ -1,48 +1,19 @@
 from twisted.internet.defer import inlineCallbacks
-#from autobahn.twisted.component import Component, run
+from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
+import random
+from game_3_drive import DriveSystem 
+from typing import Generator, Any
+from game_3_emotion_mapping import emotion_cards
+from game_3_robot_actions import RobotActions
+from game_3_info import encouragement_sentences, positive_feedback_sentences, flag_cards, questions, score_feedback
 
-flag_cards = {
-    1: ("Sweden", "idk"),
-    2: ("Latvia", "idk"),
-    3: ("Netherlands", "idk"),
-    4: ("Cyprus", "idk"),
-    5: ("Poland", "idk")     
-    }
+def get_feedback_message(score):
+    for score_range, message in score_feedback.items():
+        if score_range[0] <= score <= score_range[1]:
+            return message
+    return "Great effort! Keep learning and improving."
 
-
-questions = [
-    (
-        "Over 50'%' of Latvia's territory is covered by forests",
-        True,
-        "Latvia is one of the greenest countries in Europe.",
-    ),
-    (
-        "The Netherlands has the highest population density in Europe.",
-        True,
-        "Despite its small size, the Netherlands is densely populated.",
-    ),
-    (
-        "Sweden is west of Norway genographically",
-        False,
-        "Sweden is located to the east of Norway, not the west. The two countries share a long border.",
-    ),
-    (
-        "Poland is home to the world’s largest castle by area.",
-        True,
-        "Malbork Castle in Poland is the largest castle by area in the world.",
-    ),
-    (
-        "Nicosia is the only capital city in the world divided between two nations.",
-        True,
-        "Nicosia is divided between the Greek Cypriot south and the Turkish Cypriot north.",
-    ),
-    (
-        "The Polish are the tallest people in the world.",
-        False,
-        "Actually the Dutch are actually the tallest people in the world, with an average height of 175.62 cm.",
-    ),
-]
 
 def smart_question_binary(session, question):
     """
@@ -74,10 +45,10 @@ def smart_question_binary(session, question):
             force=True,
         )
         correct = True
-        text = "That is correct." + question[2]
+        text = f"That is correct. {random.choice(positive_feedback_sentences)}" + question[2]
         yield session.call("rie.dialogue.say", text=text)
     elif (answer == "true" and not question[1]) or (answer == "false" and question[1]):
-        yield session.call("rie.dialogue.say", text="That is incorrect.")
+        yield session.call("rie.dialogue.say", text=f"That is incorrect. {random.choice(encouragement_sentences)}")
 
     return correct
 
@@ -96,7 +67,6 @@ class CardUsage:
     @inlineCallbacks
     def ask_flag_card_question(self):
         #session.call("rie.vision.card.stream")
-        # we ask the question based on animal_cards mapping
         
         for card_id, (country, fact) in flag_cards.items():
             correct = False
@@ -108,7 +78,7 @@ class CardUsage:
                 if attempts > 0 and attempts < 2:  # ask the question, if not first attempt, provide feedback
                     yield self.session.call("rie.dialogue.say", text="Try one more time. " + question)
                 elif attempts > 1:
-                    yield self.session.call("rie.dialogue.say", text="The national flag of {country} has {fact}." + question)
+                    yield self.session.call("rie.dialogue.say", text="I'll give you a hint! The national flag of {country} has {fact}." + question)
                 else:
                     yield self.session.call("rie.dialogue.say", text=question)
 
@@ -116,10 +86,10 @@ class CardUsage:
 
                 print("exited")
                 if correct:
-                    yield self.session.call("rie.dialogue.say", text=f"Correct! That is the national flag of {country}. Let's try another country !")
+                    yield self.session.call("rie.dialogue.say", text=f"Correct! That is the national flag of {country}. {random.choice(positive_feedback_sentences)} Let's try another country !")
                 else:
-                    yield self.session.call("rie.dialogue.say", text="That's not the correct flag!")
-                
+                    yield self.session.call("rie.dialogue.say", text=f"That's not the correct flag! {random.choice(encouragement_sentences)}")
+
                 attempts += 1
 
     
@@ -160,7 +130,7 @@ class Levels:
                 self.score += 1
         
         if self.score < 4:
-            yield self.session.call("rie.dialogue.say", text="You are doing so well, you deserve a bonus question! Answer the following extra bonus question correctly for an additional point?")
+            yield self.session.call("rie.dialogue.say", text="You are doing so well, you deserve a bonus question! Answer the following extra bonus question correctly for an additional point!")
             if (yield smart_question_binary(self.session, questions[-1])):  # Ask the last question separately
                 self.score += 1
 
@@ -169,75 +139,166 @@ class Levels:
     @inlineCallbacks
     def hard(self):
         # Hard Level
-        yield self.session.call("rie.dialogue.config.language", lang="en")
-        # Say something with the ReadSpeaker voice in English
         yield self.session.call("rie.dialogue.say", text="Guess the next language I am speaking? Name the country and then match it to one of the flag cards in front of you! Let's start!")
 
-        yield self.session.call("rie.dialogue.config.language", lang="nl")
-        # Say something with the ReadSpeaker voice in English
-        yield self.session.call("rie.dialogue.say", text="Hallo! Ik ben hier om je aardrijkskunde te leren! Welk land spreekt deze taal?")
-        detected_card = self.card_usage.detect_card()
-        if detected_card == 3:
-            self.score += 1
+        language_config = {
+            "nl": {
+                "text": "Hallo! Ik ben hier om je aardrijkskunde te leren! Welk land spreekt deze taal?",
+                "expected_card": 3,
+                "score": 1,
+                "country": "Dutch"
+            },
+            "pl": {
+                "text": "Cześć! Nazywam się Alpha Mini i jestem tutaj, aby nauczyć Cię geografii! W jakim kraju mówi się tym językiem?",
+                "expected_card": 5,
+                "score": 1,
+                "country": "Polish"
+            },
+            "sv": {
+                "text": "Hej, jag är här för att lära dig lite geografi! Vilket land talar detta språk?",
+                "expected_card": 1,
+                "score": 1,
+                "country": "Swedish"
+            }
+        }
 
-        yield self.session.call("rie.dialogue.config.language", lang="pl")
-        yield self.session.call("rie.dialogue.say", text="Cześć! Nazywam się Alpha Mini i jestem tutaj, aby nauczyć Cię geografii! W jakim kraju mówi się tym językiem?")
-        detected_card = self.card_usage.detect_card()
-        if detected_card == 5:
-            self.score += 1
-
-        yield self.session.call("rie.dialogue.config.language", lang="sv")
-        yield self.session.call("rie.dialogue.say", text="Hej, jag är här för att lära dig lite geografi! Vilket land talar detta språk?")
-        if detected_card == 5:
-            self.score += 1
+        for lang, config in language_config.items():
+            yield self.session.call("rie.dialogue.config.language", lang=lang)
+            yield self.session.call("rie.dialogue.say", text=config["text"])
+            detected_card = yield self.card_usage.detect_card()
+            yield self.session.call("rie.dialogue.config.language", lang="en")
+            if detected_card == config["expected_card"]:
+                yield self.session.call("rie.dialogue.say", text=random.choice(positive_feedback_sentences))
+                self.score += config["score"]
+            else:
+                yield self.session.call("rie.dialogue.say", text=f" That is incorrect. I spoke {config["country"]}. {random.choice(encouragement_sentences)}")
 
         yield self.session.call("rie.dialogue.config.language", lang="en")
-        
+
+
+@inlineCallbacks
+def detect_emotion(session: Component) -> Any: 
+    global still_seconds
+
+    detected_emotion = None 
+    session.call("rie.vision.card.stream")
+    
+    card_detected = yield session.call("rie.vision.card.read", time = 1000)
+    # Okay so we try to get the card id from the detected card
+    try:
+        card_id = card_detected[0]['data']['body'][0][5]
+        yield session.call("rie.vision.card.stream")
+
+        detected_emotion = emotion_cards.get(card_id, "Unknown emotion")
+        still_seconds = CARD_SESSION_TIME
+    except:
+        pass
+    return detected_emotion
 
 
 
+# Constant Variables 
+TIMEOUT_TIME = 6000
+CARD_SESSION_TIME = 10
 
-
-
-
-
+# GLobal Variables
+still_seconds = CARD_SESSION_TIME
 
 
 # vics game individual part
 @inlineCallbacks
 def start_game(session):
-    yield session.call("rie.dialogue.say", text="")
+    yield session.call("rie.dialogue.say", text="Let's start the mini game challenge! In this game, I will test your knowledge of national flags, trivia, and languages from Europe.")
     score = 0
     aruco_card_usage = CardUsage(session)
     game_levels = Levels(session, score, aruco_card_usage)
 
+    yield sleep(2)
     # Easy difficulty part
-    yield session.call("rie.dialogue.say", text="Guess all of the coutries national flags atleast once and score 3 points! Are you ready?")
-    answers = {"yes": ["yeah", "yes", "ye", "okay"], "no": ["no", "nah", "nope"]} 
-    answer = yield session.call("rie.dialogue.ask", question="Guess all of the coutries national flags atleast once and score 3 points! Are you ready?", answers=answers)
+    yield session.call("rie.dialogue.say", text="Let's start with something simple. Your task is to identify the national flags of different countries using the Aruco cards infront of you. Guess all of the coutries national flags atleast once and score 2 points!")
+    answers = {"yes": ["yeah", "yes", "ye", "okay", "ofcourse"], "no": ["no", "nah", "nope", "never"]} 
+    answer = yield session.call("rie.dialogue.ask", question="Are you ready?", answers=answers)
 
     if answer == "yes": 
         yield session.call("rie.dialogue.say", text="Awesome! Let's begin!") 
         yield game_levels.easy()
     elif answer == "no": 
-        yield session.call("rie.dialogue.say", text="Okay! Then let me know when you want to begin by touching my head!") 
-        # Touch subscribte
+        yield session.call("rie.dialogue.say", text="No worries! Just let me know when you're ready by touching my head.") 
+        # Touch subscribe
         session.subscribe(touched, "rom.sensor.touch.stream")
         yield session.call("rom.sensor.touch.stream")  # <- touch interaction
         yield session.call("rie.dialogue.say", text="Awesome! Let's begin!")
         yield game_levels.easy()
     else: 
-        yield session.call("rie.dialogue.say", text="Sorry, I couldn't hear you properly...")
+        yield session.call("rie.dialogue.say", text="Sorry, I couldn't hear you properly.")
     
     # Medium difficulty part
-    yield session.call("rie.dialogue.say", text="Well done! Now that you have correctly answered all of the flag questions, let's move on to some trivia!" +
-                       "This time I will add points to your score for every correct answer!")
+    yield session.call("rie.dialogue.say", text="Well done! Now that you've identified the flags, let's move on to some trivia questions. This time I will add points to your score for every correct answer!")
     yield game_levels.medium()
 
-    yield session.call("rie.dialogue.say", text="Now that you collected so many points. Let's try something different. I will speak in a language and you will have to guess what language out of the countries infront of you am I speaking?"
-                       + "I hope you paid attention to the beginning of our game about the different national flags")
+    # Hard difficulty part
+    yield session.call("rie.dialogue.say", text="Fantastic job so far! Now, let's try something different. I'll speak in a language, and you have to guess which country it is from by showing me the countries corresponding flag."
+                       + "Let's see how well you paid attention to the beginning of the game")
+    yield game_levels.hard()
+
+     # Final feedback
+    final_score = game_levels.score
+    feedback_message = get_feedback_message(final_score)
+    session.call("rom.optional.behavior.play", name="BlocklyApplause")
+    yield session.call("rie.dialogue.say", text=f"You have completed the challenge! Well done! Your final score is {final_score} out of 10. {feedback_message}")
+    yield sleep(2)
+
+    global still_seconds
+
+    robot_actions = RobotActions(session)
+    drive_system = DriveSystem()
+    outcome, outcome_intensity = None, None
+
+    yield session.call("rie.dialogue.say", text="How do you feel now that you have completed the challenge?")
+
+    while(True):
+        detected_emotion = yield detect_emotion(session)
+        drive_system.print_meters()
+        if detected_emotion != None:
+            # First argument is the detected emotion category, then the detected emotion intensity
+            drive_system.percieve_emotions(detected_emotion[2], detected_emotion[1])
+        outcome, outcome_intensity = drive_system.update_all_meters()
+
+        # If the loop timeout is 0, then we get the highest response bar
+        if still_seconds == 0:
+            outcome, outcome_intensity = drive_system.emotion_selector()
+            break
+        # Else if a threashold of a response bar is reached, we stop now 
+        elif outcome is not None:
+            print("Outcome: ", outcome, "Intensity: ", outcome_intensity)
+            break
+        # Also if an emotion threshold is reached, break
+        print("still seconds: ", still_seconds)
+        still_seconds -= 1
     
-    # Final feedback
-    yield session.call("rie.dialogue.say", text=f"You did amazing! Your knowledge of geography is impressive. Your final score is {game_levels.score} out of 10.")
-    session.leave()
+    # If the outcome is anything but None, it will perform the required action
+    if outcome == "neutral":
+        yield robot_actions.move_neutral()
+        yield session.call("rie.dialogue.say", text="I see.") 
+    elif outcome == "positive":
+        yield robot_actions.move_positive(outcome_intensity/2)
+        yield session.call("rie.dialogue.say", text="Wow, you seem really pleased! I'm delighted that you're enjoying the game so much.") 
+    elif outcome == "negative":
+        yield robot_actions.move_negative(outcome_intensity/2)
+        yield session.call("rie.dialogue.say", text="It sounds like you're a bit discouraged. I understand, learning new things isn't always easy. But I believe in you - let's break it down and try again together.") 
+
+
+    answer = yield session.call("rie.dialogue.ask", question="You did very good for your first time doing this challenge. Would you like to play again and beat your high-score?", answers=answers)
+
+    if answer == "yes": 
+        yield session.call("rie.dialogue.say", text="Awesome! Let's play again!!")
+        session.call("rom.optional.behavior.play", name="BlocklyRobotDance")
+        start_game(session)
+    elif answer == "no": 
+        session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
+        yield session.call("rie.dialogue.say", text="That's a shame! Goodbye!") 
+    else: 
+        yield session.call("rie.dialogue.say", text="Sorry, I couldn't hear you properly.")
+    
+    
 
