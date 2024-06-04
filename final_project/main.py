@@ -10,7 +10,7 @@ wamp = Component(
         "url": "ws://wamp.robotsindeklas.nl",
         "serializers": ["msgpack"],
     }],
-    realm="rie.665853e0f26645d6dd2c2e92",
+    realm="rie.665ec73229fca0a53366cd5e",
 )
 
 @inlineCallbacks
@@ -32,7 +32,8 @@ def ask_game_choice(session):
 
 @inlineCallbacks
 def main(session, details):
-    # start by looking at the face
+    yield game_3.start_game(session)
+    '''# start by looking at the face
     yield session.call("rie.vision.face.find")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
     
@@ -42,7 +43,7 @@ def main(session, details):
     yield session.call("rie.dialogue.say", text="I can help you learn about geography through fun games.")
     yield sleep(1)
     yield session.call("rie.dialogue.say", text="Did you know that the Amazon Rainforest is the largest tropical rainforest in the world? It spans across nine countries!")
-    yield sleep(2)
+    yield sleep(1)
     yield session.call("rie.dialogue.say", text="Now, let's have some fun together!")
     
     # ask user to choose a game
@@ -58,7 +59,7 @@ def main(session, details):
         yield session.call("rie.dialogue.say", text="Starting Game 3")
         yield game_3.start_game(session)
     else:
-        yield session.call("rie.dialogue.say", text="I didn't understand that. Please say 'Game 1', 'Game 2', or 'Game 3'.")
+        yield session.call("rie.dialogue.say", text="I didn't understand that. Please say 'Game 1', 'Game 2', or 'Game 3'.")'''
 
 wamp.on_join(main)
 

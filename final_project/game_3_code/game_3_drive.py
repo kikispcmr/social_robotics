@@ -98,7 +98,7 @@ class DriveSystem():
             min(self.perception_meter[perceptual_bar] + intensity_factor, 1), -1)
 
     # Function that updates the bars based on the perceptual input
-    def percieve_emotions(self, emotion_group: str, intensity: float) -> None:
+    def perceive_emotions(self, emotion_group: str, intensity: float) -> None:
         """
         Updates the perception meter based on the perceived emotion and its intensity.
 

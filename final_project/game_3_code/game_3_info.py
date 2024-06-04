@@ -43,7 +43,7 @@ questions = [
         "Despite its small size, the Netherlands is densely populated.",
     ),
     (
-        "Sweden is west of Norway genographically",
+        "Sweden is west of Norway genographically.",
         False,
         "Sweden is located to the east of Norway, not the west. The two countries share a long border.",
     ),
@@ -53,7 +53,7 @@ questions = [
         "Malbork Castle in Poland is the largest castle by area in the world.",
     ),
     (
-        "Nicosia is the only capital city in the world divided between two nations.",
+        "The city Nicosia in Cyprus is the only capital city in the world divided between two nations.",
         True,
         "Nicosia is divided between the Greek Cypriot south and the Turkish Cypriot north.",
     ),

@@ -2,11 +2,12 @@ from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 import random
-from final_project.game_3_code.game_3_drive import DriveSystem 
+from game_3_code.game_3_drive import DriveSystem 
 from typing import Generator, Any
-from final_project.game_3_code.game_3_emotion_mapping import emotion_cards
-from final_project.game_3_code.game_3_robot_actions import RobotActions
-from final_project.game_3_code.game_3_info import encouragement_sentences, positive_feedback_sentences, flag_cards, questions, score_feedback
+from game_3_code.game_3_emotion_mapping import emotion_cards
+from game_3_code.game_3_robot_actions import RobotActions
+from game_3_code.game_3_info import encouragement_sentences, positive_feedback_sentences, flag_cards, questions, score_feedback
+
 
 def get_feedback_message(score):
     for score_range, message in score_feedback.items():
@@ -14,7 +15,7 @@ def get_feedback_message(score):
             return message
     return "Great effort! Keep learning and improving."
 
-
+@inlineCallbacks
 def smart_question_binary(session, question):
     """
     Asks a binary (True/False) question to the user and provides feedback based on the user's answer.
@@ -53,7 +54,7 @@ def smart_question_binary(session, question):
     return correct
 
 
-
+@inlineCallbacks
 def touched(frame):
     if ("body.head.front" in frame["data"] or "body.head.middle" in frame["data"] or "body.head.rear" in frame["data"]):
         print("touched") 
@@ -66,7 +67,7 @@ class CardUsage:
 
     @inlineCallbacks
     def ask_flag_card_question(self):
-        #session.call("rie.vision.card.stream")
+        self.session.call("rie.vision.card.stream")
         
         for card_id, (country, fact) in flag_cards.items():
             correct = False
@@ -78,15 +79,15 @@ class CardUsage:
                 if attempts > 0 and attempts < 2:  # ask the question, if not first attempt, provide feedback
                     yield self.session.call("rie.dialogue.say", text="Try one more time. " + question)
                 elif attempts > 1:
-                    yield self.session.call("rie.dialogue.say", text="I'll give you a hint! The national flag of {country} has {fact}." + question)
+                    yield self.session.call("rie.dialogue.say", text=f"I'll give you a hint! The national flag of {country} has {fact}..." + question)
                 else:
                     yield self.session.call("rie.dialogue.say", text=question)
 
-                correct = yield self.wait_for_correct_flag(self.session, card_id)
+                correct = yield self.wait_for_correct_flag(card_id)
 
                 print("exited")
                 if correct:
-                    yield self.session.call("rie.dialogue.say", text=f"Correct! That is the national flag of {country}. {random.choice(positive_feedback_sentences)} Let's try another country !")
+                    yield self.session.call("rie.dialogue.say", text=f"Correct! That is the national flag of {country}. {random.choice(positive_feedback_sentences)} Let's try another country !") #issue here with kets try
                 else:
                     yield self.session.call("rie.dialogue.say", text=f"That's not the correct flag! {random.choice(encouragement_sentences)}")
 
@@ -95,12 +96,15 @@ class CardUsage:
     
     @inlineCallbacks
     def wait_for_correct_flag(self, correct_card_id):
+        card_detected = None
+        print("inside wait for correct flag")
+        #self.session.call("rie.vision.card.stream")
         card_detected = yield self.detect_card()
-        yield self.session.call("rie.vision.card.stream")
         return card_detected == correct_card_id
 
-    
+    @inlineCallbacks
     def detect_card(self):
+        self.session.call("rie.vision.card.stream")
         print("entered")
         # detect the shown card
         card_detected = yield self.session.call("rie.vision.card.read")
@@ -120,11 +124,12 @@ class Levels:
     @inlineCallbacks
     def easy(self):
         yield self.session.call("rie.dialogue.say", text="I will ask you a question and you should pick which aruco card is the correct answer!")
-        yield self.card_usage.ask_flag_card_question(self.session)
+        yield self.card_usage.ask_flag_card_question()
         self.score = 2
 
     @inlineCallbacks
     def medium(self):
+        print("entered medium")
         for question in questions[:-1]:
             if (yield smart_question_binary(self.session, question)):
                 self.score += 1
@@ -154,11 +159,11 @@ class Levels:
                 "score": 1,
                 "country": "Polish"
             },
-            "sv": {
-                "text": "Hej, jag är här för att lära dig lite geografi! Vilket land talar detta språk?",
-                "expected_card": 1,
+            "es": {
+                "text": "Hola, ¡estoy aquí para enseñarte algo de geografía! ¿Qué país habla este idioma?",
+                "expected_card": 18,
                 "score": 1,
-                "country": "Swedish"
+                "country": "Spanish"
             }
         }
 
@@ -171,7 +176,7 @@ class Levels:
                 yield self.session.call("rie.dialogue.say", text=random.choice(positive_feedback_sentences))
                 self.score += config["score"]
             else:
-                yield self.session.call("rie.dialogue.say", text=f" That is incorrect. I spoke {config["country"]}. {random.choice(encouragement_sentences)}")
+                yield self.session.call("rie.dialogue.say", text=f" That is incorrect. I spoke {config['country']}. {random.choice(encouragement_sentences)}")
 
         yield self.session.call("rie.dialogue.config.language", lang="en")
 
@@ -200,6 +205,7 @@ class EmpathyModule:
         except:
             pass
         return detected_emotion
+
 
     @inlineCallbacks
     def process_emotion(self):
@@ -250,13 +256,13 @@ def start_game(session):
     score = 0
     aruco_card_usage = CardUsage(session)
     game_levels = Levels(session, score, aruco_card_usage)
-
-    yield sleep(2)
+    
+    yield sleep(1)
     # Easy difficulty part
     yield session.call("rie.dialogue.say", text="Let's start with something simple. Your task is to identify the national flags of different countries using the Aruco cards infront of you. Guess all of the coutries national flags atleast once and score 2 points!")
     answers = {"yes": ["yeah", "yes", "ye", "okay", "ofcourse"], "no": ["no", "nah", "nope", "never"]} 
     answer = yield session.call("rie.dialogue.ask", question="Are you ready?", answers=answers)
-
+    
     if answer == "yes": 
         yield session.call("rie.dialogue.say", text="Awesome! Let's begin!") 
         yield game_levels.easy()
@@ -270,21 +276,21 @@ def start_game(session):
     else: 
         yield session.call("rie.dialogue.say", text="Sorry, I couldn't hear you properly.")
     
+
     # Medium difficulty part
     yield session.call("rie.dialogue.say", text="Well done! Now that you've identified the flags, let's move on to some trivia questions. This time I will add points to your score for every correct answer!")
     yield game_levels.medium()
 
     # Hard difficulty part
-    yield session.call("rie.dialogue.say", text="Fantastic job so far! Now, let's try something different. I'll speak in a language, and you have to guess which country it is from by showing me the countries corresponding flag."
-                       + "Let's see how well you paid attention to the beginning of the game")
+    yield session.call("rie.dialogue.say", text="Fantastic job so far! Now, let's try something different. I'll speak in a language, and you have to guess which country it is from by showing me the countries corresponding flag. Let's see how well you paid attention to the beginning of the game")
     yield game_levels.hard()
-
+    
      # Final feedback
     final_score = game_levels.score
     feedback_message = get_feedback_message(final_score)
     session.call("rom.optional.behavior.play", name="BlocklyApplause")
     yield session.call("rie.dialogue.say", text=f"You have completed the challenge! Well done! Your final score is {final_score} out of 10. {feedback_message}")
-    yield sleep(2)
+    yield sleep(1)
 
     yield session.call("rie.dialogue.say", text="How do you feel now that you have completed the challenge?")
 
