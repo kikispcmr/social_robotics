@@ -63,3 +63,19 @@ questions = [
         "Actually the Dutch are the tallest people in the world, with an average height of 175.62 cm.",
     ),
 ]
+
+# aruco id mapping - 12 cards
+emotion_cards = {
+    17: ("serenity", 1, "emotion1"),
+    16: ("joy", 2, "emotion1"),
+    15: ("ecstasy", 3, "emotion1"),
+    14: ("pensiveness", -1, "emotion1"),
+    13: ("sadness", -2, "emotion1"),
+    12: ("grief", -3, "emotion1"),
+    6: ("boredom",-1, "emotion2"),
+    7: ("disgust",-2, "emotion2"),
+    8: ("loathing",-3, "emotion2"),
+    9: ("acceptance",1, "emotion2"),
+    10: ("trust",2, "emotion2"),
+    11: ("admiration", 3, "emotion2")
+}

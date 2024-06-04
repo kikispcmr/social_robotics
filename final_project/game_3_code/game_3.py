@@ -2,7 +2,7 @@ from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 import random
-from game_3_code.game_3_drive import DriveSystem 
+from shared_code.drive import DriveSystem 
 from typing import Generator, Any
 from shared_code.emotion_mapping import emotion_cards
 from shared_code.robot_actions import RobotActions
