@@ -4,8 +4,8 @@ from autobahn.twisted.util import sleep
 import random
 from game_3_code.game_3_drive import DriveSystem 
 from typing import Generator, Any
-from game_3_code.game_3_emotion_mapping import emotion_cards
-from game_3_code.game_3_robot_actions import RobotActions
+from shared_code.emotion_mapping import emotion_cards
+from shared_code.robot_actions import RobotActions
 from game_3_code.game_3_info import encouragement_sentences, positive_feedback_sentences, flag_cards, questions, score_feedback
 
 
