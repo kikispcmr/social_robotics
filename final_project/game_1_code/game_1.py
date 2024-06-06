@@ -1,7 +1,7 @@
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, returnValue
 from autobahn.twisted.util import sleep
 import random
-from game_1_code.game_1_dialogue import animal_questions, continent_cards, correct_responses, incorrect_responses 
+from game_1_code.game_1_dialogue import animal_questions, continent_cards, correct_responses, incorrect_responses
 
 class AnimalGame:
     def __init__(self, session):
@@ -9,12 +9,21 @@ class AnimalGame:
 
     @inlineCallbacks
     def check_card(self, frame, expected_location):
-        # Check if the correct card is shown
-        for card in frame["data"]["body"]:
-            card_id = card[5]  # Extract card ID
-            if card_id in continent_cards and continent_cards[card_id] == expected_location:
-                return True, card_id
-        return False, card_id
+        card_id = yield self.detect_card(frame)
+        if card_id in continent_cards and continent_cards[card_id] == expected_location:
+            returnValue((True, card_id))
+        returnValue((False, card_id))
+
+    @inlineCallbacks
+    def detect_card(self, frame):
+        self.session.call("rie.vision.card.stream")
+        print("entered")
+        # detect the shown card
+        card_detected = yield self.session.call("rie.vision.card.read")
+        print("card detected : ", card_detected[0]['data']['body'][0][5])
+        card_detected = card_detected[0]['data']['body'][0][5]
+
+        return card_detected
 
     @inlineCallbacks
     def ask_question(self, animal, location, hint):
@@ -50,12 +59,16 @@ class AnimalGame:
         yield self.session.call("rie.dialogue.say", text="Hello there! I'm excited to take you on an adventure to learn about some amazing animals and where they live.")
         yield sleep(1)
         yield self.session.call("rie.dialogue.say", text="We'll explore different continents and discover fascinating facts about each animal. Touch my head to get started!")
+        yield sleep(1)
         yield self.session.subscribe(self.touched, "rom.sensor.touch.stream")
         yield self.session.call("rom.sensor.touch.stream")
 
     @inlineCallbacks
     def touched(self, frame):
         if "body.head.front" in frame["data"] or "body.head.middle" in frame["data"] or "body.head.rear" in frame["data"]:
+            yield self.session.call("rie.dialogue.say", text="Great, let's get started!")
+            yield sleep(1)
+            yield self.session.call("rom.sensor.touch.stream", unsubscribe=True)
             yield self.run_game()
 
     @inlineCallbacks
@@ -66,6 +79,7 @@ class AnimalGame:
 
         for animal, (location, fact, hint) in animal_items:
             yield self.ask_question(animal, location, hint)
+            yield sleep(1)
 
         yield self.session.call("rie.dialogue.say", text="You have completed the game. Great job! Now you know more about where these animals live and some interesting facts about them.")
         yield sleep(1)

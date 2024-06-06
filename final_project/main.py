@@ -10,7 +10,7 @@ wamp = Component(
         "url": "ws://wamp.robotsindeklas.nl",
         "serializers": ["msgpack"],
     }],
-    realm="rie.666187af29fca0a53366e071", # add your realm
+    realm="rie.6661746129fca0a53366dfbb", # add your realm
 )
 
 @inlineCallbacks
@@ -32,7 +32,8 @@ def ask_game_choice(session):
 
 @inlineCallbacks
 def main(session, details):
-    yield game_1.start_game(session)
+    game = game_1.AnimalGame(session)
+    yield game.start_game()
 
     '''# start by looking at the face
     yield session.call("rie.vision.face.find")
