@@ -1,16 +1,16 @@
 from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep
-import game_1 # mathias
-import game_2 # kyriakos
-from game_3_code import game_3 # vic
+from game_1_code import game_1 #mathias
+#from game_2 import game_2 # kyriakos
+#from game_3_code import game_3 # vic
 
 wamp = Component(
     transports=[{
         "url": "ws://wamp.robotsindeklas.nl",
         "serializers": ["msgpack"],
     }],
-    realm="rie.665ec73229fca0a53366cd5e",
+    realm="rie.666187af29fca0a53366e071", # add your realm
 )
 
 @inlineCallbacks
@@ -32,7 +32,8 @@ def ask_game_choice(session):
 
 @inlineCallbacks
 def main(session, details):
-    yield game_3.start_game(session)
+    yield game_1.start_game(session)
+
     '''# start by looking at the face
     yield session.call("rie.vision.face.find")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
