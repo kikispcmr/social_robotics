@@ -191,3 +191,6 @@ class RobotActions:
         yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
 
  
+    @inlineCallbacks
+    def wave_arm(self):
+        yield self.session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
