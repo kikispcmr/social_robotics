@@ -21,9 +21,9 @@ continent_cards = {
 
 correct_responses = [
     "Well done! The {animal} indeed lives in {location}.",
-    "Great job! You found that the {animal} is from {location}.",
-    "Excellent! The {animal} calls {location} its home.",
-    "You're right! The {animal} lives in {location}.",
+    "Great job my friend! You found that the {animal} is from {location}.",
+    "Excellent work! The {animal} calls {location} its home.",
+    "You're right! How did you know that one? The {animal} lives in {location}.",
     "Good work! The {animal} is indeed found in {location}."
 ]
 

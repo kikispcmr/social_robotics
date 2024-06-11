@@ -37,7 +37,7 @@ class AnimalGame:
         yield self.session.call("rie.vision.card.stream")
         correct = False
         attempts = 0
-        max_attempts = 3
+        max_attempts = 2
         card_id = None
         while not correct and attempts < max_attempts:
             # Listen for the card input
@@ -50,7 +50,7 @@ class AnimalGame:
                 return
             attempts += 1
             if attempts < max_attempts:
-                if attempts == 2:
+                if attempts == 1:
                     yield self.session.call("rie.dialogue.say", text=f"That's not the right answer. You showed {continent_cards[card_id]}. Try again! Here's a hint: {hint}")
                 else:
                     yield self.session.call("rie.dialogue.say", text=random.choice(incorrect_responses))
@@ -61,7 +61,6 @@ class AnimalGame:
     @inlineCallbacks
     def start_game(self):
         if not self.game_running:
-            self.game_running = True
             yield self.session.call("rie.dialogue.say", text="Hello there! I'm excited to take you on an adventure to learn about some amazing animals and where they live.")
             yield sleep(1)
             yield self.robot_actions.wave_arm()
@@ -72,11 +71,13 @@ class AnimalGame:
     @inlineCallbacks
     def touched(self, frame):
         print("Touch detected!")
-        if "body.head.front" in frame["data"] or "body.head.middle" in frame["data"] or "body.head.rear" in frame["data"]:
+        yield self.session.call("rom.sensor.touch.stream", unsubscribe=True)
+        if self.game_running is not True and "body.head.front" in frame["data"] or "body.head.middle" in frame["data"] or "body.head.rear" in frame["data"]:
+            self.game_running = True
             print("Head touch detected!")
+            yield self.session.call("rom.actuator.audio.stream", url="https://audio.jukehost.co.uk/tD16h2ar3hk2Hh1u7FYaX7pzJ0Iu5NFG", sync=False)
+            yield self.session.call("rom.actuator.audio.stop")
             yield self.session.call("rie.dialogue.say", text="Great, let's get started!")
-            yield sleep(1)
-            yield self.session.call("rom.sensor.touch.stream", unsubscribe=True)
             yield self.run_game()
 
     @inlineCallbacks
@@ -92,3 +93,7 @@ class AnimalGame:
         yield self.session.call("rie.dialogue.say", text="Remember, learning about animals helps us understand the world better and why it's important to protect their habitats. Until next time, keep exploring and learning!")
         yield self.session.leave()
         self.game_running = False
+
+# add some nice sound to the head touch event
+# count the correct answers
+# i

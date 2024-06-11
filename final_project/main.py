@@ -10,7 +10,7 @@ wamp = Component(
         "url": "ws://wamp.robotsindeklas.nl",
         "serializers": ["msgpack"],
     }],
-    realm="rie.6661746129fca0a53366dfbb", # add your realm
+    realm="rie.6668015d29fca0a533670187", # add your realm
 )
 
 @inlineCallbacks
