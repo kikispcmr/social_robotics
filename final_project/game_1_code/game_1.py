@@ -96,4 +96,3 @@ class AnimalGame:
 
 # add some nice sound to the head touch event
 # count the correct answers
-# i
