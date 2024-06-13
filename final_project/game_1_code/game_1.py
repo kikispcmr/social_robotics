@@ -9,6 +9,7 @@ class AnimalGame:
         self.session = session
         self.game_running = False
         self.robot_actions = RobotActions(session)
+        self.question_running = False  # To prevent multiple question flows
 
     @inlineCallbacks
     def check_card(self, frame, expected_location):
@@ -29,6 +30,10 @@ class AnimalGame:
 
     @inlineCallbacks
     def ask_question(self, animal, location, hint):
+        if self.question_running:  # Prevent simultaneous question flows
+            return
+        self.question_running = True  # Mark question flow as running
+
         question = f"Where do {animal}s live?"
         yield self.session.call("rie.dialogue.say", text=question)
         yield sleep(1)
@@ -47,6 +52,7 @@ class AnimalGame:
                 yield self.robot_actions.move_positive()  # happy movement when correct
                 yield self.session.call("rie.dialogue.say", text=random.choice(correct_responses).format(animal=animal, location=location))
                 yield self.session.call("rie.dialogue.say", text=f"{animal_questions[animal][1]}")  # provide the fact
+                self.question_running = False  # Mark question flow as finished
                 return
             attempts += 1
             if attempts < max_attempts:
@@ -57,6 +63,8 @@ class AnimalGame:
             else:
                 yield self.robot_actions.move_negative()  # sad movement when incorrect after max attempts
                 yield self.session.call("rie.dialogue.say", text=f"The correct answer is {location}, where {animal}s live.")
+
+        self.question_running = False  # Mark question flow as finished
 
     @inlineCallbacks
     def start_game(self):
@@ -72,10 +80,11 @@ class AnimalGame:
     def touched(self, frame):
         print("Touch detected!")
         yield self.session.call("rom.sensor.touch.stream", unsubscribe=True)
-        if self.game_running is not True and "body.head.front" in frame["data"] or "body.head.middle" in frame["data"] or "body.head.rear" in frame["data"]:
+        if not self.game_running and ("body.head.front" in frame["data"] or "body.head.middle" in frame["data"] or "body.head.rear" in frame["data"]):
             self.game_running = True
             print("Head touch detected!")
             yield self.session.call("rom.actuator.audio.stream", url="https://audio.jukehost.co.uk/tD16h2ar3hk2Hh1u7FYaX7pzJ0Iu5NFG", sync=False)
+            sleep(1)
             yield self.session.call("rom.actuator.audio.stop")
             yield self.session.call("rie.dialogue.say", text="Great, let's get started!")
             yield self.run_game()
@@ -93,6 +102,4 @@ class AnimalGame:
         yield self.session.call("rie.dialogue.say", text="Remember, learning about animals helps us understand the world better and why it's important to protect their habitats. Until next time, keep exploring and learning!")
         yield self.session.leave()
         self.game_running = False
-
-# add some nice sound to the head touch event
-# count the correct answers
+        self.question_running = False  # Reset question running status
