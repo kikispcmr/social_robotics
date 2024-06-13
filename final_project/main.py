@@ -1,7 +1,7 @@
 from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep
-import game_1 # mathias
+from game_1_code.game_1 import AnimalGame # mathias
 from game_2_code.game_2 import start_game # kyriakos
 from game_3_code import game_3 # vic
 
@@ -15,6 +15,27 @@ wamp = Component(
 
 @inlineCallbacks
 def ask_game_choice(session):
+    """
+    Ask the user to choose a game and provides brief explanations for each game.
+
+    Args:
+        session: The session object for interacting with the robot.
+
+    Returns:
+        str: The chosen game.
+    """
+    yield session.call("rie.dialogue.say", text="We have three fun games to choose from!")
+    yield sleep(1)
+    
+    yield session.call("rie.dialogue.say", text="Game 1 is an Animal Game where you will learn about different animals and their habitats.")
+    yield sleep(1)
+    
+    yield session.call("rie.dialogue.say", text="Game 2 is a Mystery Game where you will solve puzzles and uncover secrets.")
+    yield sleep(1)
+    
+    yield session.call("rie.dialogue.say", text="Game 3 is a Geography Challenge where you will test your knowledge of national flags, trivia, and languages from Europe.")
+    yield sleep(1)
+    
     yield session.call("rie.dialogue.say", text="Which game would you like to play? Please say 'Game 1', 'Game 2', or 'Game 3'.")
     yield sleep(1)
     answer = yield session.call(
@@ -31,8 +52,17 @@ def ask_game_choice(session):
     return answer
 
 @inlineCallbacks
-def vic_code(session, details):
-    print("Here")
+def main(session, details):
+    """
+    Main function to start the geography educational game.
+
+    Args:
+        session: The session object for interacting with the robot.
+        details: Additional details for the session.
+    """
+    #game = AnimalGame(session)
+    #yield start_game(session, details)#game.start_game()
+    game_3.start_game(session)
     # start by looking at the face
     yield session.call("rie.vision.face.find")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
@@ -43,7 +73,7 @@ def vic_code(session, details):
     yield session.call("rie.dialogue.say", text="I can help you learn about geography through fun games.")
     yield sleep(1)
     yield session.call("rie.dialogue.say", text="Did you know that the Amazon Rainforest is the largest tropical rainforest in the world? It spans across nine countries!")
-    yield sleep(2)
+    yield sleep(1)
     yield session.call("rie.dialogue.say", text="Now, let's have some fun together!")
     
     # ask user to choose a game
@@ -60,11 +90,6 @@ def vic_code(session, details):
         yield game_3.start_game(session)
     else:
         yield session.call("rie.dialogue.say", text="I didn't understand that. Please say 'Game 1', 'Game 2', or 'Game 3'.")
-
-@inlineCallbacks
-def main(session, details):
-    print("Starting the game")
-    yield vic_code(session, details)
     session.leave()
 
 

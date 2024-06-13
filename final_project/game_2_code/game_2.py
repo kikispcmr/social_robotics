@@ -81,17 +81,17 @@ def touch_section(session, dialogue_manager, touch_manager):
     #--- End of this section
 
 
-    dialogue_manager.nod_and_say("A big part of human geography is all about cities. Let's look at the Netherlands!")
+    yield dialogue_manager.nod_and_say("A big part of human geography is all about cities. Let's look at the Netherlands!")
 
     # You should be very familiar with the Netherlands. Imagine the middle of my head in Amsterdam, where would Groningen be on my head?
-    yield dialogue_manager.nod_and_say("You should be very familiar with the Netherlands. Imagine the middle of my head is Amsterdam, where would Groningen be on my head?")
+    yield dialogue_manager.nod_and_say("You should be very familiar with the Netherlands. Imagine the middle of my head is Amsterdam. The back of my head is North, the front of my head is South, where would Groningen be on my head?")
 
     # Do BlocklyTouchHead animation to show middle of the head
     yield session.call("rom.actuator.motor.write", frames=[{"time": 0, "data": {"body.head.pitch": 0.0}}], force=True)
 
     # Then do a touch call to the back of the head of the robot
-    touch_manager.touch("rear")
-
+    answer = yield touch_manager.touch("rear")
+    #print(answer)
     # Check if the answer is correct
     correct_answer = False
     for _ in range(2):
@@ -130,10 +130,10 @@ def touch_section(session, dialogue_manager, touch_manager):
 
     yield dialogue_manager.nod_and_say("Great job! Let's move on!!!")
 
-
+@inlineCallbacks
 def start_game(session, details):
     yield session.call("rie.dialogue.say", text="You have started Game 2. Have fun!")
-    action_manager = RobotActions(session, mapping)
+    #action_manager = RobotActions(session, mapping)
     touch_manager = TouchActions(session)
     dialogue_manager = DialogueActions(session)
     #aruco_manager = ArucoActions(session)

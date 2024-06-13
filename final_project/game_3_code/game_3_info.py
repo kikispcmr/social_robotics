@@ -43,7 +43,7 @@ questions = [
         "Despite its small size, the Netherlands is densely populated.",
     ),
     (
-        "Sweden is west of Norway genographically",
+        "Sweden is west of Norway genographically.",
         False,
         "Sweden is located to the east of Norway, not the west. The two countries share a long border.",
     ),
@@ -53,7 +53,7 @@ questions = [
         "Malbork Castle in Poland is the largest castle by area in the world.",
     ),
     (
-        "Nicosia is the only capital city in the world divided between two nations.",
+        "The city Nicosia in Cyprus is the only capital city in the world divided between two nations.",
         True,
         "Nicosia is divided between the Greek Cypriot south and the Turkish Cypriot north.",
     ),
@@ -63,3 +63,19 @@ questions = [
         "Actually the Dutch are the tallest people in the world, with an average height of 175.62 cm.",
     ),
 ]
+
+# aruco id mapping - 12 cards
+emotion_cards = {
+    17: ("serenity", 1, "emotion1"),
+    16: ("joy", 2, "emotion1"),
+    15: ("ecstasy", 3, "emotion1"),
+    14: ("pensiveness", -1, "emotion1"),
+    13: ("sadness", -2, "emotion1"),
+    12: ("grief", -3, "emotion1"),
+    6: ("boredom",-1, "emotion2"),
+    7: ("disgust",-2, "emotion2"),
+    8: ("loathing",-3, "emotion2"),
+    9: ("acceptance",1, "emotion2"),
+    10: ("trust",2, "emotion2"),
+    11: ("admiration", 3, "emotion2")
+}
