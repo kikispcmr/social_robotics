@@ -2,7 +2,7 @@ from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep
 import game_1 # mathias
-import game_2 # kyriakos
+from game_2_code.game_2 import start_game # kyriakos
 from game_3_code import game_3 # vic
 
 wamp = Component(
@@ -10,7 +10,7 @@ wamp = Component(
         "url": "ws://wamp.robotsindeklas.nl",
         "serializers": ["msgpack"],
     }],
-    realm="rie.665853e0f26645d6dd2c2e92",
+    realm="rie.666aab97961f249628fc26eb",
 )
 
 @inlineCallbacks
@@ -31,7 +31,8 @@ def ask_game_choice(session):
     return answer
 
 @inlineCallbacks
-def main(session, details):
+def vic_code(session, details):
+    print("Here")
     # start by looking at the face
     yield session.call("rie.vision.face.find")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
@@ -59,6 +60,13 @@ def main(session, details):
         yield game_3.start_game(session)
     else:
         yield session.call("rie.dialogue.say", text="I didn't understand that. Please say 'Game 1', 'Game 2', or 'Game 3'.")
+
+@inlineCallbacks
+def main(session, details):
+    print("Starting the game")
+    yield vic_code(session, details)
+    session.leave()
+
 
 wamp.on_join(main)
 

@@ -87,7 +87,6 @@ def main(session, details):
 
     session.leave()
 
-
 wamp.on_join(main)
 
 if __name__ == "__main__":

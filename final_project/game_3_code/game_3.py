@@ -2,11 +2,11 @@ from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 import random
-from final_project.game_3_code.game_3_drive import DriveSystem 
+from .game_3_drive import DriveSystem 
 from typing import Generator, Any
-from final_project.game_3_code.game_3_emotion_mapping import emotion_cards
-from final_project.game_3_code.game_3_robot_actions import RobotActions
-from final_project.game_3_code.game_3_info import encouragement_sentences, positive_feedback_sentences, flag_cards, questions, score_feedback
+from .game_3_emotion_mapping import emotion_cards
+from .game_3_robot_actions import RobotActions
+from .game_3_info import encouragement_sentences, positive_feedback_sentences, flag_cards, questions, score_feedback
 
 def get_feedback_message(score):
     for score_range, message in score_feedback.items():

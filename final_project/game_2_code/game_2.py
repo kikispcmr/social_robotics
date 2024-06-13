@@ -1,8 +1,8 @@
 from twisted.internet.defer import inlineCallbacks
-from robot_actions import RobotActions
-from touch_actions import TouchActions
-from dialogue_actions import DialogueActions
-from movements import mapping 
+from .robot_actions import RobotActions
+from .touch_actions import TouchActions
+from .dialogue_actions import DialogueActions
+from .movements import mapping 
 
 
 @inlineCallbacks 
@@ -57,7 +57,10 @@ def dialogue_section(session, dialogue_manager):
     # If correct, say "Wow we have a good listener! Let's move on to the next question"
     yield dialogue_manager.nod_and_say("Wow we have a good listener! Let's move on to the next question")
 
+# Add fun facts at the end of each reply 
+@inlineCallbacks
 def touch_section(session, dialogue_manager, touch_manager):
+    print("Touch Section")
     # --- End of the introduction
     # A big part of human geography is all about cities. Let's look at the NEtherlands! 
     # You should be very familiar with the Netherlands. Imagine the middle of my head in Amsterdam, where would Groningen be on my head?
@@ -128,26 +131,51 @@ def touch_section(session, dialogue_manager, touch_manager):
     yield dialogue_manager.nod_and_say("Great job! Let's move on!!!")
 
 
-@inlineCallbacks
-def start_game(session):
+def start_game(session, details):
     yield session.call("rie.dialogue.say", text="You have started Game 2. Have fun!")
     action_manager = RobotActions(session, mapping)
     touch_manager = TouchActions(session)
     dialogue_manager = DialogueActions(session)
-
+    #aruco_manager = ArucoActions(session)
     
-    dialogue_section(session, dialogue_manager)
+    # yield dialogue_section(session, dialogue_manager)
+    yield touch_section(session, dialogue_manager, touch_manager)
 
-    # Okay since human geography is all about how we interact with the Earth. Pretend my head is a big . 
-    # Idkkkkk think of questions. 
-    # Robot demonstrates that touching its front head means yes 
-
-    # End of that section: 
     # Okay, let's move on to the next section.
+    # We talked all about these cities, 
     # Let's play with some Aruco cards: 
+    # Another big part of Human Geography is how we affect the environment. 
+    # We talked about some big cities in the Netherlands, but do you know what is further? 
+    # You have four aruco cards in front of you, 
+    # 1 is for Amsterdam, 
+    # 2 is for Groningen,
+    # 3 is for Eindhoven,
+    # 4 is for Rottordam.
+    # From Groningen, which is closer Amsterdam or Rotterdam? 
+    # Wait for Aruco Card 
+    # If Correct, say "Great! Let's move on to the next question."
+    # From Amsterdam, which is closer Groningen or Eindhoven?
+    # Wait for Aruco Card
+    # If Correct, say "Great! Let's move on to the next question."
+    # From Groningen, which is closer Eindhoven or Rotterdam?
+    # Wait for Aruco Card
 
 
-    # End of Aruco cards section:
+
+
+    # Wow you know your stuff! One last question, would you like to try a hard question? 
+    # Wait for yes or no response
+    # If yes, say "Great! Let's get started"
+    # If no, say "No problem, let's continue!"
+    # So if yes, we do one last Aruco card game where the child needs to show Amterdam to Eindhoven in order of which are closest. 
+    # If no, we continue to the next section.
+    # If they get it wrong, then we repeat the question.
+    # If they get it wrong again, then we say the answer.
+    # The right order is Amsterdam, Groningen, Eindhoven, Rotterdam.
+
+    # End of ARUCO CARD 
+
+    # Let's have a look 
 
 
     # Feedback of game:
@@ -155,7 +183,7 @@ def start_game(session):
     yield touch_manager.touch("front")
     yield touch_manager.touch("back")
 
-    session.leave()
+    #session.leave()
 
 
 
