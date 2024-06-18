@@ -81,7 +81,8 @@ def main(session, details):
     
     if answer == "game 1":
         yield session.call("rie.dialogue.say", text="Starting Game 1")
-        yield game_1.start_game(session)
+        game_1 = AnimalGame(session)
+        yield game_1.start_game()
     elif answer == "game 2":
         yield session.call("rie.dialogue.say", text="Starting Game 2")
         yield game_2.start_game(session)
