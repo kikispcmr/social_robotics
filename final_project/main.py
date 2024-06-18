@@ -10,7 +10,7 @@ wamp = Component(
         "url": "ws://wamp.robotsindeklas.nl",
         "serializers": ["msgpack"],
     }],
-    realm="rie.666aab97961f249628fc26eb",
+    realm="rie.6671489d755a12a49504d05d",
 )
 
 @inlineCallbacks
@@ -62,7 +62,7 @@ def main(session, details):
     """
     #game = AnimalGame(session)
     #yield start_game(session, details)#game.start_game()
-    game_3.start_game(session)
+    #yield game_3.start_game(session)
     # start by looking at the face
     yield session.call("rie.vision.face.find")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")

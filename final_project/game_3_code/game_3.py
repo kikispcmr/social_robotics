@@ -126,8 +126,10 @@ class CardUsage:
 
                 correct = yield self.wait_for_correct_flag(card_id)
 
-                if correct:
-                    yield self.session.call("rie.dialogue.say", text=f"Correct! That is the national flag of {country}. {random.choice(positive_feedback_sentences)} Let's try another country !") #issue here with kets try
+                if correct and card_id is 5:
+                    yield self.session.call("rie.dialogue.say", text=f"Correct! That is the national flag of {country}. {random.choice(positive_feedback_sentences)}")
+                elif correct:
+                    yield self.session.call("rie.dialogue.say", text=f"Correct! That is the national flag of {country}. {random.choice(positive_feedback_sentences)} Let's try another country !")
                 else:
                     yield self.session.call("rie.dialogue.say", text=f"That's not the correct flag! {random.choice(encouragement_sentences)}")
 
@@ -146,7 +148,6 @@ class CardUsage:
             bool: True if the user showed the correct card, False otherwise.
         """
         card_detected = None
-        print("inside wait for correct flag")
         card_detected = yield self.detect_card()
         return card_detected == correct_card_id
 
@@ -159,6 +160,7 @@ class CardUsage:
             int: The ID of the detected Aruco card.
         """
         self.session.call("rie.vision.card.stream")
+
         # detect the shown card
         card_detected = yield self.session.call("rie.vision.card.read")
         print("card detected : ", card_detected[0]['data']['body'][0][5])
@@ -199,13 +201,15 @@ class Levels:
         """
         Implements the medium level of the game; relevant geography trivia.
         """
+        extra_attempt = 0
         for question in questions[:-1]:
             if (yield smart_question_binary(self.session, question)):
                 self.score += 1
         
-        if self.score < 4:
-            yield self.session.call("rie.dialogue.say", text="You are doing so well, you deserve a bonus question! Answer the following extra bonus question correctly for an additional point!")
-            if (yield smart_question_binary(self.session, questions[-1])):  # Ask the last question separately
+        if self.score < 4 and extra_attempt is 0:
+            extra_attempt = 1
+            yield self.session.call("rie.dialogue.say", text="Well done for trying so hard, you deserve a bonus question! Answer the following extra bonus question correctly for an additional point!")
+            if (yield smart_question_binary(self.session, questions[-1])):  # Ask the last question separately for extra point if score low
                 self.score += 1
 
 
@@ -424,7 +428,7 @@ def start_game(session):
         start_game(session)
     elif answer == "no": 
         session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
-        yield session.call("rie.dialogue.say", text="That's a shame!") 
+        yield session.call("rie.dialogue.say", text="That's a shame!")
     else: 
         yield session.call("rie.dialogue.say", text="Sorry, I couldn't hear you properly.")
     
