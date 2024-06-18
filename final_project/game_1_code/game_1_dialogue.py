@@ -24,13 +24,19 @@ false_statements = {
 
 # Define the mapping of continent Aruco card IDs to continent names
 continent_cards = {
-    1: "Africa",
+    1: "Australia",
     2: "Asia",
-    3: "Australia",
-    4: "Antarctica",
-    5: "Arctic"
+    3: "Africa",
+    4: "Arctic",
+    5: "Antarctica"
 }
 
+true_false_cards = {
+    6: True,
+    7: False
+}
+
+#the correct responses for the continent questions
 correct_responses = [
     "Well done! The {animal} indeed lives in {location}.",
     "Great job my friend! You found that the {animal} is from {location}.",
@@ -39,6 +45,7 @@ correct_responses = [
     "Good work! The {animal} is indeed found in {location}."
 ]
 
+# the incorrect responses
 incorrect_responses = [
     "That's not the right answer. Try again!",
     "Not quite. Give it another shot! You can do it!",
@@ -57,14 +64,10 @@ correct_responses_true_false = [
 ]
 
 incorrect_responses_true_false = [
-    "That's not the right answer. Try again!",
-    "Not quite. Give it another shot! You can do it!",
+    "That's not the right answer. Try the other card",
+    "Not quite. Give it another shot! You should know the answer by now.",
     "That's incorrect. Please try once more!",
-    "Nope, that's not it. Try again!",
+    "Nope, that's not it. Try the other card",
     "That's not the right one. But have another go!"
 ]
 
-true_false_cards = {
-    6: True,
-    7: False
-}
