@@ -10,7 +10,7 @@ wamp = Component(
         "url": "ws://wamp.robotsindeklas.nl",
         "serializers": ["msgpack"],
     }],
-    realm="rie.667149e6755a12a49504d06b",
+    realm="rie.6671489d755a12a49504d05d",
 )
 
 @inlineCallbacks
@@ -65,7 +65,6 @@ def main(session, details):
     #yield game.run_game()
     #yield start_game(session, details)#game.start_game()
     #yield game_3.start_game(session)
-    
     # start by looking at the face
     yield session.call("rie.vision.face.find")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
@@ -84,7 +83,8 @@ def main(session, details):
     
     if answer == "game 1":
         yield session.call("rie.dialogue.say", text="Starting Game 1")
-        #yield game_1.start_game(session)
+        game_1 = AnimalGame(session)
+        yield game_1.start_game()
     elif answer == "game 2":
         yield session.call("rie.dialogue.say", text="Starting Game 2")
         yield game_2.start_game(session)
