@@ -389,6 +389,7 @@ def start_game(session):
         yield session.call("rie.dialogue.say", text="Awesome! Let's begin!") 
         yield game_levels.easy()
     elif answer == "no": 
+        session.call("rom.optional.behavior.play", name="BlocklyTouchHead")
         yield session.call("rie.dialogue.say", text="No worries! Just let me know when you're ready by touching my head.") 
         session.subscribe(touched, "rom.sensor.touch.stream")
         yield session.call("rom.sensor.touch.stream")  # <- touch interaction
@@ -399,10 +400,13 @@ def start_game(session):
     
 
     # Medium difficulty part
+    session.call("rom.optional.behavior.play", name="BlocklyApplause")
     yield session.call("rie.dialogue.say", text="Well done! Now that you've identified the flags, let's move on to some trivia questions. This time I will add points to your score for every correct answer!")
     yield game_levels.medium()
+    
 
     # Hard difficulty part
+    session.call("rom.optional.behavior.play", name="BlocklyApplause")
     yield session.call("rie.dialogue.say", text="Fantastic job so far! Now, let's try something different. I'll speak in a language, and you have to guess which country it is from by showing me the countries corresponding flag. Let's see how well you paid attention to the beginning of the game")
     yield game_levels.hard()
     
