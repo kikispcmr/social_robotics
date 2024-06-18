@@ -40,6 +40,32 @@ class DialogueActions:
         return data, answer
 
     @inlineCallbacks
+    def target_smart_question_flow(self, questions):
+        """
+        Ask a question and return the answer and data.
+
+        Args:
+            questions: A list of questions.
+
+        Returns:
+            A tuple containing the data and the answer.
+        """
+        answer = yield self.session.call(
+            "rie.dialogue.ask",
+            question=questions[0],
+            answers={
+                "true": ["true", "yes", "ja", "tru"],
+                "false": ["false", "no", "nej", "fls"],
+            },
+        )
+        data = yield self.session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
+        if (answer == questions[1]):
+            yield self.nod_and_say("That is correct." + questions[2])
+        elif (answer != questions[1]):
+            yield self.session.call("rie.dialogue.say", text="That is incorrect.")
+
+    # NICE TO HAVE
+    @inlineCallbacks
     def nod_and_say(self, text):
         """
         Make the robot nod and say a given text.
@@ -59,8 +85,19 @@ class DialogueActions:
         )
         yield self.session.call("rie.dialogue.say", text=text)
 
+    def monologue(self, questions):
+        """
+        Make the robot say a given text.
+
+        Args:
+            text: The text to say.
+        """
+        for text in questions:
+            yield self.session.call("rie.dialogue.say", text=text)
+
+    # KEEP | THIS ONE IS IMPORTANT
     @inlineCallbacks
-    def smart_question_binary(self, questions, action):
+    def smart_question_binary(self, questions, score):
         """
         Ask a binary question and perform an action based on the answer.
 
@@ -68,40 +105,21 @@ class DialogueActions:
             questions: A list of questions.
             action: The action to perform.
         """
-        if questions[3] and action is not None:
-            action()
-        _, answer = self.base_smart_question_flow(questions)
+        print(questions)
+        answer = yield self.base_smart_question_flow(questions)
+        answer = answer[-1]
+        print("THIS", answer)
 
         if (answer == "true" and questions[1]) or (answer == "false" and not questions[1]):
             yield self.nod_and_say("That is correct." + questions[2])
+            score += 1
         elif (answer == "true" and not questions[1]) or (answer == "false" and questions[1]):
-            yield self.session.call("rie.dialogue.say", text="That is incorrect.")
+            yield self.session.call("rie.dialogue.say", text=questions[3])
+            score = 0
 
-    @inlineCallbacks
-    def smart_question_multiple(self, question, action=None):
-        """
-        Ask a multiple choice question and perform an action based on the answer.
+        return score
 
-        Args:
-            question: The question to ask.
-            action: The action to perform.
-        """
-        if question[3] and action is not None:
-            action()
-
-        answer = yield self.session.call(
-            "rie.dialogue.ask",
-            question=question[0],
-            answers={"true": ["true", "yes", "ja"], "false": ["false", "no", "nej"]},
-        )
-
-        yield self.session.call("rie.dialogue.stt.read", time=TIMEOUT_TIME)
-
-        if answer in question[1]:
-            yield self.nod_and_say("That is correct." + question[2])
-        elif answer not in question[1]:
-            yield self.session.call("rie.dialogue.say", text="That is incorrect.")
-
+    # KEEP 
     @inlineCallbacks
     def smart_question_branching(self, session, question):
         """
@@ -115,10 +133,11 @@ class DialogueActions:
             The answer to the question.
         """
         answer = None
-        data, answer = self.base_smart_question_flow(session, question)
+        answer = yield self.base_smart_question_flow([question])
+        answer = answer[-1]
 
         if answer == "true":
-            yield session.call("rie.dialogue.say", text="That's great! Let's go with some trivia.")
+            yield session.call("rie.dialogue.say", text="That's great! Let's go!")
             answer = True
         elif answer == "false":
             yield session.call("rie.dialogue.say", text="No problem, let's continue!")

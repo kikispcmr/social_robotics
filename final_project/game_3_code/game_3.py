@@ -393,7 +393,6 @@ def start_game(session):
     else: 
         yield session.call("rie.dialogue.say", text="Sorry, I couldn't hear you properly.")
     
-
     # Medium difficulty part
     yield session.call("rie.dialogue.say", text="Well done! Now that you've identified the flags, let's move on to some trivia questions. This time I will add points to your score for every correct answer!")
     yield game_levels.medium()

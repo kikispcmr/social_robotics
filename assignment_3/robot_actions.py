@@ -138,11 +138,22 @@ class RobotActions:
             "negative": sad_emotion,
             "positive" : positive_emotion,
         }
+
+        self.pre_movements = {
+            "neutral": "BlocklyStand",
+            "disco": "BlocklyDiscoDance",
+            "up" : "ArmsUp",
+            "kiss" : "air_kiss_avatar"
+        }
     
     # Perform a specific movement from the internal dictionary of pre-built movements 
     @inlineCallbacks
     def motion(self, movement: str):
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
+
+    @inlineCallbacks
+    def prebuilt_motion(self, movement: str):
+        yield self.session.call("rom.optional.behavior.play", name=self.pre_movements[movement])
 
     @inlineCallbacks
     # Adjust intensity based on the intensity factor from the drive

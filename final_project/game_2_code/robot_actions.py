@@ -1,19 +1,159 @@
 from autobahn.twisted.util import sleep
 from twisted.internet.defer import inlineCallbacks
 
+sad_emotion = [
+    {
+        "time": 400,
+        "data": {
+            "body.head.pitch": -0.175,
+            "body.arms.left.upper.pitch": -1.0,
+            "body.arms.right.upper.pitch": -1.0,
+            "body.arms.left.lower.roll": 0.0,
+            "body.arms.right.lower.roll": 0.0,
+        },
+    },
+    {
+        "time": 1400,
+        "data": {
+            "body.head.pitch": 0.175,
+            "body.arms.left.upper.pitch": -2.6,
+            "body.arms.right.upper.pitch": -2.6,
+            "body.arms.left.lower.roll": -1.75,
+            "body.arms.right.lower.roll": -1.75,
+        },
+    },
+    {
+        "time": 2000,
+        "data": {
+            "body.head.pitch": 0.175,
+            "body.arms.left.upper.pitch": -1.0,
+            "body.arms.right.upper.pitch": -1.0,
+            "body.arms.left.lower.roll": 0.0,
+            "body.arms.right.lower.roll": 0.0,
+        },
+    },
+    {
+        "time": 2400,
+        "data": {
+            "body.head.pitch": 0.0,
+            "body.arms.left.upper.pitch": -1.0,
+            "body.arms.right.upper.pitch": -1.0,
+            "body.arms.left.lower.roll": 2.0,
+            "body.arms.right.lower.roll": 2.0,
+        },
+    },
+    {
+        "time": 3000,
+        "data": {
+            "body.head.pitch": 0.0,
+            "body.arms.left.upper.pitch": 0.0,
+            "body.arms.right.upper.pitch": 0.0,
+            "body.arms.left.lower.roll": 0.0,
+            "body.arms.right.lower.roll": 0.0,
+        },
+    }
+]
+
+positive_emotion = [
+    # starting position
+        {
+            "time": 400,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": 0,
+                "body.arms.left.lower.roll": 0
+            },
+        },
+        {
+            "time": 1000,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": 0.0,
+                "body.arms.left.lower.roll": 0.0
+            },
+        },
+        {
+            "time": 1400,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": 1.0,
+                "body.arms.left.lower.roll": -1.0
+            },
+        },
+        {
+            "time": 1800,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": -1.0,
+                "body.arms.left.lower.roll": 1.0
+            },
+        },
+        {
+            "time": 2200,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": 1.0,
+                "body.arms.left.lower.roll": -1.0
+            },
+        },
+                {
+            "time": 2600,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": -1.0,
+                "body.arms.left.lower.roll": 1.0
+            },
+        },
+        {
+            "time": 3000,
+            "data": {
+                "body.arms.right.upper.pitch": -2.5,
+                "body.arms.left.upper.pitch": -2.5,
+                "body.arms.right.lower.roll": 0.0,
+                "body.arms.left.lower.roll": 0.0
+            },
+        },
+        {
+            "time": 3400,
+            "data": {
+                "body.arms.right.upper.pitch": 0,
+                "body.arms.left.upper.pitch": 0,
+                "body.arms.right.lower.roll": 0.0,
+                "body.arms.left.lower.roll": 0.0
+            },
+        }
+   ]
+
 class RobotActions:
 
-    def __init__(self, session, mapping):
+    def __init__(self, session):
         self.session = session
         self.movements = {
             "negative": sad_emotion,
             "positive" : positive_emotion,
+        }
+
+        self.pre_movements = {
+            "neutral": "BlocklyStand",
+            "disco": "BlocklyDiscoDance",
+            "up" : "ArmsUp",
+            "kiss" : "air_kiss_avatar"
         }
     
     # Perform a specific movement from the internal dictionary of pre-built movements 
     @inlineCallbacks
     def motion(self, movement: str):
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
+
+    @inlineCallbacks
+    def prebuilt_motion(self, movement: str):
+        yield self.session.call("rom.optional.behavior.play", name=self.pre_movements[movement])
 
     @inlineCallbacks
     # Adjust intensity based on the intensity factor from the drive

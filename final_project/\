@@ -30,7 +30,7 @@ def ask_game_choice(session):
     yield session.call("rie.dialogue.say", text="Game 1 is an Animal Game where you will learn about different animals and their habitats.")
     yield sleep(1)
     
-    yield session.call("rie.dialogue.say", text="Game 2 is a Human Geography game all about where people live on Earth and fun facts about that!")
+    yield session.call("rie.dialogue.say", text="Game 2 is a Mystery Game where you will solve puzzles and uncover secrets.")
     yield sleep(1)
     
     yield session.call("rie.dialogue.say", text="Game 3 is a Geography Challenge where you will test your knowledge of national flags, trivia, and languages from Europe.")
@@ -67,6 +67,7 @@ def main(session, details):
     #yield game_3.start_game(session)
     
     # start by looking at the face
+    yield game_2.start_game(session)
     yield session.call("rie.vision.face.find")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
     

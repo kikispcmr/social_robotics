@@ -1,7 +1,5 @@
 
-
-
-
+from twisted.internet.defer import inlineCallbacks
 class TouchActions:
 
     def __init__(self, session):
@@ -12,11 +10,15 @@ class TouchActions:
             "rear": "body.head.rear",
         }
 
-    def touch(self, target : str):
-        self.session.subscribe(self.is_touched, "rom.sensor.touch.stream", self.touch_mapping[target])
-
+    @inlineCallbacks
     def is_touched(self, frame, target):
         if(target in frame["data"]):
             return True
         return False
+
+    @inlineCallbacks
+    def touch(self, target : str):
+        self.session.subscribe(self.is_touched, "rom.sensor.touch.stream", self.touch_mapping[target])
+
+
 
