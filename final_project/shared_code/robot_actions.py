@@ -1,3 +1,5 @@
+# Shared code
+
 from autobahn.twisted.util import sleep
 from twisted.internet.defer import inlineCallbacks
 

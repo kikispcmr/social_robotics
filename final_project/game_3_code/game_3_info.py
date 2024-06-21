@@ -1,3 +1,4 @@
+# Individual Part for Victoria 
 
 encouragement_sentences = [
     "You're almost there! Keep up the good work.",
