@@ -1,3 +1,17 @@
+"""
+
+Author: Mathias Randrüüt (m.randruut@student.rug.nl)
+
+Description:
+
+This Python script is designed to be an interactive educational game for children, 
+aimed at teaching them about animals, their habitats, different continents, 
+and trivia facts to enhance their knowledge about our planet. 
+The game is structured into two main phases.
+
+"""
+
+
 from twisted.internet.defer import inlineCallbacks, returnValue
 from autobahn.twisted.util import sleep
 from game_1_code.game_1_dialogue import animal_questions, continent_cards, correct_responses, incorrect_responses, incorrect_responses_true_false, correct_responses_true_false, true_false_cards, false_statements
@@ -61,7 +75,7 @@ class AnimalGame:
                 yield self.session.call("rie.dialogue.say", text=f"{animal_questions[animal][1]}")  # provide the fact
                 self.score += 1
                 return
-            attempts += 1
+            attempts += 1 #iterate the attempts. The user has a maximum of two attempts. Before the second attempt, a hind is provided.
             if attempts < max_attempts:
                 if attempts == 1:
                     yield self.session.call("rie.dialogue.say", text=f"That's not the right answer. You showed {continent_cards[card_id]}. Try again! Here's a hint: {hint}")
@@ -158,7 +172,7 @@ class AnimalGame:
             yield self.session.call("rie.dialogue.say", text="Don't worry! Keep practicing and you'll get better!")
         
 
-    #start game 1
+    # start the game
     @inlineCallbacks
     def start_game(self):
         yield self.session.call("rie.dialogue.say", text="Hello there! I'm excited to take you on an adventure to learn about some amazing animals and where they live.")
