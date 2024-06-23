@@ -1,4 +1,11 @@
-# Shared code
+"""
+This script initiates an educational geography game session with a robot that teaches children about geography through three fun minigames. 
+
+The games include learning about animal habitats, human geography, and a geography challenge focused on national flags, trivia, and languages.
+
+Authors: MATHIAS RANDRÜÜT, VICTORIA POLAKA, and KYRIAKOS HJIKAKOU
+
+"""
 
 from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
