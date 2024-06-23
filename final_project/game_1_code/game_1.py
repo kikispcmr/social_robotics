@@ -20,6 +20,15 @@ import random
 
 #class for the mini animal game
 class AnimalGame:
+    """
+    A class to handle the game about animals and their habitats.
+
+    Attributes:
+        session: The session object for communicating with the robot.
+        robot_actions: An instance of RobotActions to control robot movements and audio.
+        game_running: A flag to prevent multiple game starts.
+        score: The score of the player.
+    """
     def __init__(self, session):
         self.session = session
         self.robot_actions = RobotActions(session)
@@ -29,6 +38,16 @@ class AnimalGame:
     #function to check the card and return whether a correct continent was shown
     @inlineCallbacks
     def check_card(self, frame, expected_location):
+        """
+        Checks if the correct continent card was shown.
+
+        Args:
+            frame: The frame data containing the card information.
+            expected_location: The expected location of the card.
+
+        Returns:
+            A tuple containing a boolean indicating correctness and the card ID.
+        """
         card_id = yield self.detect_card(frame)
         if card_id in continent_cards and continent_cards[card_id] == expected_location:
             returnValue((True, card_id))
@@ -37,6 +56,16 @@ class AnimalGame:
     #function to check whether the correct true or false card was shown
     @inlineCallbacks
     def check_true_false_card(self, frame, value):
+        """
+        Checks if the correct true or false card was shown.
+
+        Args:
+            frame: The frame data containing the card information.
+            expected_location: The expected value of the card.
+
+        Returns:
+            A tuple containing a boolean indicating correctness and the card ID.
+        """
         card_id = yield self.detect_card(frame)
         if card_id in true_false_cards and true_false_cards[card_id] == value:
             returnValue((True, card_id))
@@ -45,6 +74,15 @@ class AnimalGame:
     #function to detect the card
     @inlineCallbacks
     def detect_card(self, frame):
+        """
+        Detects the card shown in the frame.
+
+        Args:
+            frame: The frame data containing the card information.
+
+        Returns:
+            The card ID detected.
+        """
         self.session.call("rie.vision.card.stream")
         # detect the shown card
         card_detected = yield self.session.call("rie.vision.card.read")
@@ -55,6 +93,14 @@ class AnimalGame:
     # Ask where an animal lives
     @inlineCallbacks
     def ask_question(self, animal, location, hint):
+        """
+        Asks a question about where an animal lives.
+
+        Args:
+            animal: The animal in question.
+            location: The correct location where the animal lives.
+            hint: A hint to help identify the correct location.
+        """
         question = f"Where do {animal}s live?"
         yield self.session.call("rie.dialogue.say", text=question)
         yield sleep(1)
@@ -90,6 +136,13 @@ class AnimalGame:
     # Ask the true or false question
     @inlineCallbacks
     def ask_true_false_question(self, statement, is_true):
+        """
+        Asks a true or false question, based on previous facts given to the learner.
+
+        Args:
+            statement: The true or false statement.
+            is_true: The correct boolean value of the statement.
+        """
         yield self.session.call("rie.dialogue.say", text=statement)
         correct = False
         attempts = 0
@@ -113,6 +166,12 @@ class AnimalGame:
     # when touched, this runs
     @inlineCallbacks
     def touched(self, frame):
+        """
+        Handles touch events to start the game.
+
+        Args:
+            frame: The frame data containing the touch information.
+        """
         print("Touch detected!")
         if self.game_running is False and ("body.head.front" in frame["data"] or "body.head.middle" in frame["data"] or "body.head.rear" in frame["data"]):
             print("Head touch detected!")
@@ -123,9 +182,12 @@ class AnimalGame:
             yield self.session.call("rie.dialogue.say", text="Great, let's get started!")
             yield self.run_game()
 
-    # running the game, which consists of two main phases - the continent questions and the true-false questions
+
     @inlineCallbacks
     def run_game(self):
+        """
+        Runs the game, consisting of two main phases - the continent questions and the true-false questions.
+        """
         yield self.start_animal_game()
         # Start the true/false game after the animal game
         yield self.start_true_false_game()
@@ -144,9 +206,12 @@ class AnimalGame:
         yield sleep(1)
         yield self.session.call("rie.dialogue.say", text="Remember, learning about animals helps us understand the world better and why it's important to protect their habitats.")
 
-    # this starts the second, more difficult part of the animal game with the true and false statements.
+    
     @inlineCallbacks
     def start_true_false_game(self):
+        """
+        Starts the second phase of the game, asking true or false questions about animal facts.
+        """
         yield self.session.call("rie.dialogue.say", text="Now, let's test whether you noticed the facts I told you with some true or false questions.")
         animal_items = list(animal_questions.items())
         random.shuffle(animal_items)
@@ -162,7 +227,7 @@ class AnimalGame:
             for statement, is_true in statements:
                 yield self.ask_true_false_question(statement, is_true)
         yield self.session.call("rie.dialogue.say", text="Great job on completing the true/false challenge! Keep learning and exploring!")
-        # provide feedback based on the total correct answers
+        # provide feedback based on the total correct answers.
         yield self.session.call("rie.dialogue.say", text=f"You answered {self.score} questions correctly!")
         if self.score > len(animal_questions):
             yield self.session.call("rie.dialogue.say", text="Amazing! You really know your stuff!")
