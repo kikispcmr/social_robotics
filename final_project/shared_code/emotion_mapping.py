@@ -1,4 +1,15 @@
-# Shared code
+
+"""
+    Shared code
+
+    A dictionary which contains emotion card ids with their respective emotions.
+
+    Each key is an integer representing the card ID, and the value is a tuple containing:
+        - Emotion name (str): The name of the emotion.
+        - Emotion value (int): The numeric value associated with the emotion, where positive values represent positive emotions and negative values represent negative emotions.
+        - Emotion type (str): A string representing the category or type of the emotion.
+
+"""
 
 emotion_cards = {
     17: ("serenity", 1, "emotion1"),
