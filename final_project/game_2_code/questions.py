@@ -105,7 +105,7 @@ aruco = [
 ),
 (
 "From Groningen, which is closer Eindhoven or Rotterdam?",
-3,
+4,
 "Excellent job! You've completed the Human Geography lesson.",
 ),
 ]

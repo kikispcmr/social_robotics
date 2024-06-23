@@ -1,14 +1,5 @@
 from twisted.internet.defer import inlineCallbacks
 from typing import Tuple
-# aruco id mapping - 4 cards
-animals_cards = {
-    1: ("Giraffe", "Africa"),
-    2: ("Panda", "Asia"),
-    3: ("Kangaroo", "Australia"),
-    4: ("Penguin", "Antarctica"),
-}
-
-
 class ArucoActions:
     """
     A class for handling Aruco card detection and asking questions related to the detected cards.
