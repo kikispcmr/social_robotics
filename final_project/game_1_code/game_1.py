@@ -10,6 +10,7 @@ class AnimalGame:
         self.session = session
         self.robot_actions = RobotActions(session)
         self.game_running = False  # Safety flag to prevent multiple game starts
+        self.score = 0
 
     #function to check the card and return whether a correct continent was shown
     @inlineCallbacks
@@ -58,6 +59,7 @@ class AnimalGame:
                 yield self.robot_actions.move_positive()  # happy movement when correct
                 yield self.session.call("rie.dialogue.say", text=random.choice(correct_responses).format(animal=animal, location=location))
                 yield self.session.call("rie.dialogue.say", text=f"{animal_questions[animal][1]}")  # provide the fact
+                self.score += 1
                 return
             attempts += 1
             if attempts < max_attempts:
@@ -83,6 +85,7 @@ class AnimalGame:
             if correct:
                 yield self.robot_actions.move_positive()
                 yield self.session.call("rie.dialogue.say", text=random.choice(correct_responses_true_false))
+                self.score += 1  
                 break
             else:
                 attempts += 1
@@ -142,7 +145,16 @@ class AnimalGame:
             random.shuffle(statements)
             for statement, is_true in statements:
                 yield self.ask_true_false_question(statement, is_true)
-        yield self.session.call("rie.dialogue.say", text="Great job on completing the true/false challenge! Keep learning and exploring! Want to play another game?")
+        yield self.session.call("rie.dialogue.say", text="Great job on completing the true/false challenge! Keep learning and exploring!")
+        # provide feedback based on the total correct answers
+        yield self.session.call("rie.dialogue.say", text=f"You answered {self.score} questions correctly!")
+        if self.score > len(animal_questions):
+            yield self.session.call("rie.dialogue.say", text="Amazing! You really know your stuff!")
+        elif self.score > len(animal_questions) // 2:
+            yield self.session.call("rie.dialogue.say", text="Good job! You have a good understanding!")
+        else:
+            yield self.session.call("rie.dialogue.say", text="Don't worry! Keep practicing and you'll get better!")
+        
 
     #start game 1
     @inlineCallbacks
