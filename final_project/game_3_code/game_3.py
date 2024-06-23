@@ -114,7 +114,6 @@ class CardUsage:
         for card_id, (country, fact) in flag_cards.items():
             correct = False
             attempts = 0
-            max_attempts = 2  # set a max number of attempts per question
             question = f"What does the national flag of {country} look like?"
 
             while not correct:
