@@ -35,9 +35,10 @@ def capital_section(session, dialogue_manager, aruco_manager, robot_actions):
        yield dialogue_manager.nod_and_say(statement)
 
 
-    yield aruco_manager.aruco_question(capital_aruco[0], robot_actions.motion("positive"), robot_actions.motion("negative"))
-    yield aruco_manager.aruco_question(capital_aruco[1], robot_actions.prebuilt_motion("up"), robot_actions.motion("negative"))
-    yield aruco_manager.aruco_question(capital_aruco[2], robot_actions.prebuilt_motion("kiss"), robot_actions.motion("negative"))
+    yield aruco_manager.aruco_question(capital_aruco[0], robot_actions.motion("up"), robot_actions.motion("negative"))
+    yield aruco_manager.aruco_question(capital_aruco[1], robot_actions.prebuilt_motion("BlocklyBow"), robot_actions.motion("negative"))
+    yield aruco_manager.aruco_question(capital_aruco[2], robot_actions.prebuilt_motion("BlocklyBow"), robot_actions.motion("negative"))
+
 
 
 @inlineCallbacks 
