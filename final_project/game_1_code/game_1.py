@@ -67,9 +67,11 @@ class AnimalGame:
                     yield self.session.call("rie.dialogue.say", text=f"That's not the right answer. You showed {continent_cards[card_id]}. Try again! Here's a hint: {hint}")
                 else:
                     yield self.session.call("rie.dialogue.say", text=random.choice(incorrect_responses))
+                    yield self.session.call("rie.dialogue.say", text=f"{animal_questions[animal][1]}")  # provide the fact
             else:
                 yield self.robot_actions.move_negative()  # sad movement when incorrect after max attempts
                 yield self.session.call("rie.dialogue.say", text=f"The correct answer is {location}, where {animal}s live.")
+                yield self.session.call("rie.dialogue.say", text=f"{animal_questions[animal][1]}")  # provide the fact
 
     # Ask the true or false question
     @inlineCallbacks
