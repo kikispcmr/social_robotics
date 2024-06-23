@@ -53,7 +53,15 @@ sad_emotion = [
         },
     }
 ]
+"""
+A list of dictionaries representing a sad emotion animation sequence.
 
+- "time": The time in milliseconds at which the animation frame should be executed.
+- "data": A dictionary containing the joint positions for the robot's head and arms.
+
+The animation sequence starts with the head and arms in a neutral position and then moves them
+towards the face to simulate a sad expression.
+"""
 positive_emotion = [
     # starting position
         {
@@ -129,10 +137,38 @@ positive_emotion = [
             },
         }
    ]
+"""
+A list of dictionaries representing a positive emotion animation sequence.
+
+- "time": The time in milliseconds at which the animation frame should be executed.
+- "data": A dictionary containing the joint positions for the robot's head and arms.
+
+The animation sequences starts with the robot's arms in a neutral position and then moves them
+into the air, swinging in a happy manner. 
+"""
 
 class RobotActions:
+    """
+    A class for performing robot actions and animations.
 
+    Attributes:
+        session (object): A session object for interacting with the robot.
+        movements (dict): A dictionary mapping emotion names to animation sequences.
+        pre_movements (dict): A dictionary mapping names to pre-built robot movements.
+
+    Methods:
+        motion(movement):
+            Performs a specific animation sequence based on the provided emotion name.
+        prebuilt_motion(movement):
+            Performs a pre-built robot movement based on the provided name.
+    """
     def __init__(self, session):
+        """
+        Initializes the RobotActions class.
+
+        Args:
+            session (object): A session object for interacting with the robot.
+        """
         self.session = session
         self.movements = {
             "negative": sad_emotion,
@@ -149,56 +185,21 @@ class RobotActions:
     # Perform a specific movement from the internal dictionary of pre-built movements 
     @inlineCallbacks
     def motion(self, movement: str):
+        """
+        Performs a specific animation sequence based on the provided emotion name.
+
+        Args:
+            movement (str): The name of the emotion for which to perform the animation sequence.
+        """
         yield self.session.call("rom.actuator.motor.write", frames=self.movements[movement], force=True)
 
     @inlineCallbacks
     def prebuilt_motion(self, movement: str):
+        """
+        Performs a pre-built robot movement based on the provided name.
+
+        Args:
+            movement (str): The name of the pre-built movement to perform.
+        """
         yield self.session.call("rom.optional.behavior.play", name=self.pre_movements[movement])
 
-    @inlineCallbacks
-    # Adjust intensity based on the intensity factor from the drive
-    def intensity_volume(self, intensity):
-        loudness = round(intensity * 100)
-        yield self.session.call("rom.actuator.audio.volume", volume = loudness)
-
-    @inlineCallbacks
-    def move_negative(self, intensity = -0.5):
-
-        self.intensity_volume(intensity)
-        # start audio stream
-        yield self.session.call("rom.actuator.audio.stream",
-            url="https://audio.jukehost.co.uk/SVmmjrrjwLIlNx6wu2yVy5skfTOZpxhg",
-            sync=False
-        )
-        
-        # do the movement
-        yield self.motion("negative")
-        
-        # stop the audio
-        yield sleep(5)  # keep playing audio for 5 secs
-        yield self.session.call("rom.actuator.audio.stop")
-
-
-
-    @inlineCallbacks
-    def move_positive(self, intensity = -0.5):
-        self.intensity_volume(intensity)
-        # start audio stream
-        yield self.session.call("rom.actuator.audio.stream",
-            url="https://audio.jukehost.co.uk/lezvtSmppReALoBM2qHEly1ZICpNKs6t",
-            sync=False
-        )
-
-        yield self.motion("positive")
-
-        # stop audio
-        yield sleep(1)
-        yield self.session.call("rom.actuator.audio.stop")
-
-
-    @inlineCallbacks
-    def move_neutral(self):
-        # simply stands
-        yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-
- 

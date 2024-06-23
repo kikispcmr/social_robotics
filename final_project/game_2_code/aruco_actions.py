@@ -10,11 +10,43 @@ animals_cards = {
 
 
 class ArucoActions:
+    """
+    A class for handling Aruco card detection and asking questions related to the detected cards.
+
+    Attributes:
+        session (object): A session object for interacting with the RIE system.
+
+    Methods:
+        wait_for_correct_card(session, correct_card_id):
+            Waits for the correct Aruco card to be detected.
+
+        on_card(frame):
+            Callback function for handling detected Aruco cards.
+
+        aruco_question(questions, pos_action=None, neg_action=None):
+            Asks a question related to an Aruco card and performs actions based on the answer.
+    """
     def __init__(self, session):
+        """
+        Initializes the ArucoActions class.
+
+        Args:
+            session (object): A session object for interacting with the RIE system.
+        """
         self.session = session
 
     @inlineCallbacks
     def wait_for_correct_card(self, session, correct_card_id):
+        """
+        Waits for the correct Aruco card to be detected.
+
+        Args:
+            session (object): A session object for interacting with the RIE system.
+            correct_card_id (int): The ID of the correct Aruco card.
+
+        Returns:
+            bool: True if the correct card is detected, False otherwise.
+        """
         print("entered")
         # if we have the correct card
         card_detected = yield session.call("rie.vision.card.read")
@@ -34,10 +66,27 @@ class ArucoActions:
         return False
 
     def on_card(self, frame):
+        """
+        Callback function for handling detected Aruco cards.
+
+        Args:
+            frame (dict): A dictionary containing information about the detected Aruco card.
+        """
         print("Card detected:", frame["data"])
 
     @inlineCallbacks
     def aruco_question(self, questions: Tuple[str, int, str], pos_action = None, neg_action = None):
+        """
+        Asks a question related to an Aruco card and performs actions based on the answer.
+
+        Args:
+            questions (Tuple[str, int, str]): A tuple containing the question text, the correct card ID, and the response text for a correct answer.
+            pos_action (callable, optional): A function to be called if the answer is correct.
+            neg_action (callable, optional): A function to be called if the answer is incorrect.
+
+        Returns:
+            int: 1 if the answer is correct, 0 otherwise.
+        """
         anw = 0
         yield self.session.call("rie.dialogue.say", text=questions[0]) 
         correct_card = yield self.wait_for_correct_card(self.session, questions[1])

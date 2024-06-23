@@ -22,6 +22,17 @@ questions = [
 "India recently overtook China as the most populous country in the world.",),
  "Close, but not quite. It used to be China but now another country overtook it!",
 ]
+"""
+A list of tuples containing questions, expected answers, and feedback messages related to Human Geography.
+
+Each tuple contains the following elements:
+    0: The question text (str)
+    1: A list of expected answers (list of str)
+    2: The feedback message for a correct answer (str)
+    3: The feedback message for an incorrect answer (str, optional)
+"""
+
+
 
 harder_questions = [
 ("What is the smallest country in the world by land area? Is it the Monaco?",
@@ -45,6 +56,15 @@ False,
 "While other gases like methane and nitrous oxide contribute to greenhouse gas emissions, carbon dioxide makes up the largest percentage.",
 )
 ]
+"""
+A list of tuples containing questions, expected answers, and feedback messages related to Human Geography.
+
+Each tuple contains the following:
+    0: The question text (str)
+    1: The expected answer (bool)
+    2: The feedback message for a correct answer (str)
+    3: The feedback message for an incorrect answer (str)
+"""
 
 capital_aruco = [
 (
@@ -63,7 +83,14 @@ capital_aruco = [
 "Excellent job! Let's try something a bit harder",
 ),
 ]
+"""
+A list of tuples containing questions, expected answers, and feedback messages related to the capital cities of the Netherlands using Aruco cards.
 
+Each tuple contains the following elements:
+    0: The question text (str)
+    1: The expected Aruco card ID (int)
+    2: The feedback message for a correct answer (str)
+"""
 
 aruco = [
 (
@@ -82,12 +109,23 @@ aruco = [
 "Excellent job! You've completed the Human Geography lesson.",
 ),
 ]
+"""
+Tuples containing questions, expected answers, and feedback messages related to the relative distances between cities in the Netherlands using Aruco cards.
+
+Each tuple contains the following elements:
+    0: The question text (str)
+    1: The expected Aruco card ID (int)
+    2: The feedback message for a correct answer (str)
+"""
 
 intro = [
  "Welcome! We're going to be learning all about Human Geography today.",
  "The part of Geography all to do about us and our relationship with the Earth!",
  "We'll learn about cities, how we effect the Earth and more!",
 ]
+"""
+Intro for section 1 and 2.
+"""
 
 dialogue = [
  "Okay, let's move on to the next section.",
@@ -95,8 +133,14 @@ dialogue = [
  "We talked about some big cities in the Netherlands, but do you know what is further?",
  "You have four Aruco cards in front of you, 1 is for Amsterdam, 2 is for Groningen, 3 is for Eindhoven, 4 is for Rotterdam.",
 ]
+"""
+Intro for section 3.
+"""
 
 capital_section_intro = [
  "A big part of human geography is all about cities. Let's look at the Netherlands!",
  "You should be very familiar with the Netherlands. You have two Aruco cards, one for North, and one for South",
 ]
+"""
+Intro for section 4.
+"""
