@@ -86,17 +86,21 @@ The game is divided into four progressive sections, each building upon the knowl
 
 These mappings contain the ARUCO marker and the corresponding direction.
 
+```md
 1: North
 2: South
+```
 
 ### Capital City Mappings for section 4:
 
 These mappings contain the ARUCO marker and the corresponding city.
 
+```md
 1: Rotterdam
 2: Groningen
 3: Eindhoven
 4: Amsterdam
+```
 
 ## Game 3 : Geography Challenge (Victorias Individual Part)
 
