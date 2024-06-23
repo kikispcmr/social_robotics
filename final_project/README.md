@@ -59,6 +59,8 @@ True or false:
 6: True
 7: False
 
+---
+
 ## Game 2: Human Geography Basics
 
 This mini-game aims to teach users about human geography. The general structure is split
@@ -101,6 +103,8 @@ These mappings contain the ARUCO marker and the corresponding city.
 3: Eindhoven
 4: Amsterdam
 ```
+
+---
 
 ## Game 3 : Geography Challenge (Victorias Individual Part)
 
