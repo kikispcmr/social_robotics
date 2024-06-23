@@ -1,4 +1,5 @@
-# aruco id mapping - 12 cards
+# Shared code
+
 emotion_cards = {
     17: ("serenity", 1, "emotion1"),
     16: ("joy", 2, "emotion1"),

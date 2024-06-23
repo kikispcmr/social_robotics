@@ -34,7 +34,30 @@ python main.py
 
 At the beginning of the game, the social robot asks the user to choose between three mini-games to play, providing a short description of each of them. Each mini-game corresponds to someone's individual part.
 
-## Game 1 :
+## Game 1 : Animals and continents (Individual part of Mathias)
+The animal game is an educational dialogue experience designed to teach children about different animals and their habitats. 
+It is structured in two unique phases. The first phase is about recognizing the right continent based on the animal. 
+The child has to show the correct aruco card to the robot. The second phase is a series of true and false questions, 
+which further reinforces the facts given about each habitat, making use of the knowledge that the robot communicates 
+during the first phase. The robot guides the children and gives hints if they answer wrongly. 
+It also reacts positively or negatively based on the response.  
+Throughout the game, the robot makes use of dialogue, gestures, and audio cues to maintain an engaging learning experience.
+
+The card designs can be found in the Game 1 folder.
+
+# The mapping of the Cards
+
+Animals game:
+1: Australia
+2: Asia
+3: Africa
+4: Arctic
+5: Antarctica
+
+True or false:
+6: True
+7: False
+
 
 ## Game 2 :
 

@@ -1,9 +1,11 @@
+# Shared code
+
 from autobahn.twisted.component import Component, run
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.util import sleep
-from game_1_code.game_1 import AnimalGame # mathias
-from game_2_code import game_2 # kyriakos
-from game_3_code import game_3 # vic
+from game_1_code.game_1 import AnimalGame # Mathias
+from game_2_code import game_2 # Kyriakos
+from game_3_code import game_3 # Victoria
 
 wamp = Component(
     transports=[{
@@ -60,16 +62,11 @@ def main(session, details):
         session: The session object for interacting with the robot.
         details: Additional details for the session.
     """
-    #game = AnimalGame(session)
-    
-    #yield game.run_game()
-    #yield start_game(session, details)#game.start_game()
-    #yield game_3.start_game(session)
-    # start by looking at the face
+    # Start by looking at the face
     yield session.call("rie.vision.face.find")
     yield session.call("rom.optional.behavior.play", name="BlocklyWaveRightArm")
     
-    # introduction
+    # Introduction
     yield session.call("rie.dialogue.say", text="Hello! I'm your friendly robot. My name is Alpha Mini.")
     yield sleep(1)
     yield session.call("rie.dialogue.say", text="I can help you learn about geography through fun games.")
@@ -78,7 +75,7 @@ def main(session, details):
     yield sleep(1)
     yield session.call("rie.dialogue.say", text="Now, let's have some fun together!")
     
-    # ask user to choose a game
+    # Ask user to choose a game
     answer = yield ask_game_choice(session)
     
     if answer == "game 1":

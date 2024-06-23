@@ -1,3 +1,17 @@
+"""
+
+Author: Mathias Randrüüt (m.randruut@student.rug.nl)
+
+Description:
+
+This Python script is designed to be an interactive educational game for children, 
+aimed at teaching them about animals, their habitats, different continents, 
+and trivia facts to enhance their knowledge about our planet. 
+The game is structured into two main phases.
+
+"""
+
+
 from twisted.internet.defer import inlineCallbacks, returnValue
 from autobahn.twisted.util import sleep
 from game_1_code.game_1_dialogue import animal_questions, continent_cards, correct_responses, incorrect_responses, incorrect_responses_true_false, correct_responses_true_false, true_false_cards, false_statements
@@ -10,6 +24,7 @@ class AnimalGame:
         self.session = session
         self.robot_actions = RobotActions(session)
         self.game_running = False  # Safety flag to prevent multiple game starts
+        self.score = 0
 
     #function to check the card and return whether a correct continent was shown
     @inlineCallbacks
@@ -58,16 +73,19 @@ class AnimalGame:
                 yield self.robot_actions.move_positive()  # happy movement when correct
                 yield self.session.call("rie.dialogue.say", text=random.choice(correct_responses).format(animal=animal, location=location))
                 yield self.session.call("rie.dialogue.say", text=f"{animal_questions[animal][1]}")  # provide the fact
+                self.score += 1
                 return
-            attempts += 1
+            attempts += 1 #iterate the attempts. The user has a maximum of two attempts. Before the second attempt, a hind is provided.
             if attempts < max_attempts:
                 if attempts == 1:
                     yield self.session.call("rie.dialogue.say", text=f"That's not the right answer. You showed {continent_cards[card_id]}. Try again! Here's a hint: {hint}")
                 else:
                     yield self.session.call("rie.dialogue.say", text=random.choice(incorrect_responses))
+                    yield self.session.call("rie.dialogue.say", text=f"{animal_questions[animal][1]}")  # provide the fact
             else:
                 yield self.robot_actions.move_negative()  # sad movement when incorrect after max attempts
                 yield self.session.call("rie.dialogue.say", text=f"The correct answer is {location}, where {animal}s live.")
+                yield self.session.call("rie.dialogue.say", text=f"{animal_questions[animal][1]}")  # provide the fact
 
     # Ask the true or false question
     @inlineCallbacks
@@ -75,7 +93,7 @@ class AnimalGame:
         yield self.session.call("rie.dialogue.say", text=statement)
         correct = False
         attempts = 0
-        max_attempts = 2 # define max attempts the user can try to 2. After the attempts are over, move on to next question (the user should know the answer after first response, but it is good to repeat for memory)
+        max_attempts = 1 # define max attempts the user can try to 2. After the attempts are over, move on to next question (the user should know the answer after first response, but it is good to repeat for memory)
 
         while not correct and attempts < max_attempts:
             frame = yield self.session.call("rie.vision.card.read", time=6000)
@@ -83,6 +101,7 @@ class AnimalGame:
             if correct:
                 yield self.robot_actions.move_positive()
                 yield self.session.call("rie.dialogue.say", text=random.choice(correct_responses_true_false))
+                self.score += 1  
                 break
             else:
                 attempts += 1
@@ -142,9 +161,18 @@ class AnimalGame:
             random.shuffle(statements)
             for statement, is_true in statements:
                 yield self.ask_true_false_question(statement, is_true)
-        yield self.session.call("rie.dialogue.say", text="Great job on completing the true/false challenge! Keep learning and exploring! Want to play another game?")
+        yield self.session.call("rie.dialogue.say", text="Great job on completing the true/false challenge! Keep learning and exploring!")
+        # provide feedback based on the total correct answers
+        yield self.session.call("rie.dialogue.say", text=f"You answered {self.score} questions correctly!")
+        if self.score > len(animal_questions):
+            yield self.session.call("rie.dialogue.say", text="Amazing! You really know your stuff!")
+        elif self.score > len(animal_questions) // 2:
+            yield self.session.call("rie.dialogue.say", text="Good job! You have a good understanding!")
+        else:
+            yield self.session.call("rie.dialogue.say", text="Don't worry! Keep practicing and you'll get better!")
+        
 
-    #start game 1
+    # start the game
     @inlineCallbacks
     def start_game(self):
         yield self.session.call("rie.dialogue.say", text="Hello there! I'm excited to take you on an adventure to learn about some amazing animals and where they live.")
