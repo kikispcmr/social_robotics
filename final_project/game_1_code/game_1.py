@@ -79,7 +79,7 @@ class AnimalGame:
         yield self.session.call("rie.dialogue.say", text=statement)
         correct = False
         attempts = 0
-        max_attempts = 2 # define max attempts the user can try to 2. After the attempts are over, move on to next question (the user should know the answer after first response, but it is good to repeat for memory)
+        max_attempts = 1 # define max attempts the user can try to 2. After the attempts are over, move on to next question (the user should know the answer after first response, but it is good to repeat for memory)
 
         while not correct and attempts < max_attempts:
             frame = yield self.session.call("rie.vision.card.read", time=6000)
